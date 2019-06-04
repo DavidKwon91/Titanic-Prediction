@@ -1,5 +1,6 @@
 ---
 title: "Kaggle Titanic"
+author: "David (Yongbock) Kwon"
 output:
   pdf_document: default
   html_notebook: default
