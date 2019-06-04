@@ -1,5 +1,5 @@
 ---
-title: "Kaggle Titanic"
+title: "Titanic Survivor Prediction"
 author: "David (Yongbock) Kwon"
 output:
   pdf_document: default
@@ -8,20 +8,21 @@ editor_options:
   chunk_output_type: console
 ---
 
-Titanic Survivor Prediction
+Titanic Survivor Prediction - Classification
 =================
 
-Data loading and organization
+Importing and Manipulating Data - Feature Engineering
 -----------------
 ```{r}
 library(caret)
 library(dplyr)
 library(MASS)
 
-
+#train and test
 train <- read.csv("Datasets/train.csv", stringsAsFactors = TRUE, na.strings = "")
 test <- read.csv("Datasets/test.csv", stringsAsFactors = TRUE)
 
+#creating survived variables in test set
 test$Survived <- NA
 
 dat <- rbind(train,test)
@@ -76,6 +77,7 @@ test1 <- dat[892:1309,] #test.csv
 
 set.seed(125)
 
+#cv splits
 split<-createDataPartition(y=train1$Survived,p=0.7,list=FALSE)
 
 training <- train1[split,] #training set of train data
@@ -97,13 +99,13 @@ library(tidyr)
 library(ggplot2)
 
 
-###all variables
+#all variables - factor
 training %>% keep(is.factor) %>% gather() %>%
   ggplot(aes(value)) + 
   facet_wrap(~key, scales="free")+
   geom_bar()
 
-
+#all variables - factor
 training %>% keep(is.numeric) %>% gather() %>%
   ggplot(aes(value)) +
   facet_wrap(~key, scales="free")+
@@ -183,7 +185,7 @@ plot(cv.training)
 plot(cv.training$size, cv.training$dev, type="b")
 
 
-prune.training <- prune.misclass(tree.training,best=7)#actually same with tree
+prune.training <- prune.misclass(tree.training,best=7)
 plot(prune.training);text(prune.training,pretty=0)
 
 #pruned prediction
@@ -201,7 +203,7 @@ plot(ROCperf, colorize = TRUE, print.cutoffs.at = seq(0.1,0.1), text.adj = c(-0.
 
 
 performance(ROCpred, "auc")@y.values
-#auc = 0.8109
+#AUC = 0.8109
 
 confusionMatrix(tree.pred, test.pred)
 
@@ -223,7 +225,8 @@ library(MASS)
 #base random forest
 rf.training <- randomForest(Survived~., data=training, importance=TRUE)
 rf.training
-#2 mtry - classification defaults = sqrt(p) = sqrt(8) ~= 2, n.tree = 500, oob error rate = aroun 17%
+#2 mtry - classification defaults = sqrt(p) = sqrt(8) ~= 2
+#n.tree = 500, oob error rate = aroun 17%
 
 #find best mtry
 oob.err=double(8)
@@ -249,7 +252,8 @@ rf.pred <- predict(rf.training.update, testing)
 table(testing$Survived, rf.pred)
 sum(diag(table(testing$Survived,rf.pred)))/nrow(testing)
 #around 84.58% accuracy
-#since random forest provides different accuracy in every try, I made a function to get a mean value of the accuracy with few number of tries
+#since random forest provides different accuracy in every try, 
+#I made a function to get a mean value of the accuracy with few number of tries
 
 mean.acc <- function(training, testing, mtry, ntree, try, formula){
   acc <- NULL
@@ -295,15 +299,15 @@ plot(ROCperf, colorize = TRUE, print.cutoffs.at = seq(0.1,0.1), text.adj = c(-0.
 
 
 performance(ROCpred, "auc")@y.values
-#auc ~= around 0.8212
+#AUC ~= around 0.8212
 
 confusionMatrix(rf.pred, test.pred)
 
 ```
 
-Random Forest Accuracy -> around 84.5%
+Random Forest Accuracy -> around 84.21%
 
-boosting
+Boosting
 ------------------
 
 ```{r}
@@ -346,10 +350,16 @@ cv.errors
 
 for(i in 1:5){
   for(j in ntree){
-    boost.fit <- gbm(as.character(Survived)~., data = training[folds != i,], distribution = "bernoulli", n.trees = j, interaction.depth = 3, shrinkage = 0.01, verbose = F)
+    boost.fit <- gbm(as.character(Survived)~., 
+                     data = training[folds != i,], distribution = "bernoulli", 
+                     n.trees = j, interaction.depth = 3, 
+                     shrinkage = 0.01, verbose = F)
+    
     boost.pred <- predict(boost.fit, training[folds == i,], n.trees = j)
     boost.pred <- ifelse(boost.pred > 0.5, 1, 0)
-    cv.errors[which(j==ntree), i+1] = 1- sum(diag(table(training$Survived[folds==i], boost.pred)))/nrow(training[folds==i, ])
+    
+    cv.errors[which(j==ntree), i+1] = 
+      1- sum(diag(table(training$Survived[folds==i], boost.pred)))/nrow(training[folds==i, ])
   }
 }
 
@@ -365,7 +375,10 @@ plot(cv.error.rates,pch=19,type="b")
 
 
 
-boost.training <- gbm(as.character(Survived)~., data=training, distribution = "bernoulli", n.trees = 1000, interaction.depth = 3, shrinkage = 0.01, cv.folds=5)
+boost.training <- gbm(as.character(Survived)~., 
+                      data=training, distribution = "bernoulli", 
+                      n.trees = 1000, interaction.depth = 3, 
+                      shrinkage = 0.01, cv.folds=5)
 
 summary(boost.training)
 
@@ -379,12 +392,21 @@ sum(diag(table(testing$Survived, boost.pred)))/nrow(testing)
 #84.21% accuracy
 
 
+ROCpred <- prediction(as.numeric(boost.pred), test.pred)
+ROCperf <- performance(ROCpred, "tpr", "fpr")
+plot(ROCperf, colorize = TRUE, print.cutoffs.at = seq(0.1,0.1), text.adj = c(-0.2,1.7))
+
+
+performance(ROCpred, "auc")@y.values
+#auc = 0.8256
+
+confusionMatrix(as.factor(boost.pred), testing$Survived)
 
 ```
 
 Boosting -> 84.21%
 
-SVM - linear
+SVM - linear 
 ----------------------
 
 ```{r}
@@ -395,10 +417,13 @@ print(svm.fit)
 
 summary(svm.fit)
 
-tune.out <- tune(svm, Survived~., data=training, kernel = "linear", ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10,15,20)))
+tune.out <- tune(svm, Survived~., data=training, 
+                 kernel = "linear", 
+                 ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10,15,20)))
 
 summary(tune.out)
 
+#best model with the C values (tuning parameter)
 tune.out$best.model
 
 svm.best <- tune.out$best.model
@@ -426,7 +451,7 @@ SVM linear Accuracy -> 83.46%
 
 
 
-SVM - radial
+SVM - radial kernel
 ------------------
 ```{r}
 svm.fit <- svm(Survived~., data=training, scale=FALSE, kernel="radial", cost=5)
@@ -434,7 +459,9 @@ print(svm.fit)
 
 summary(svm.fit)
 
-tune.out <- tune(svm, Survived~., data=training, kernel = "radial", ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10,15,20)))
+tune.out <- tune(svm, Survived~., data=training, 
+                 kernel = "radial", 
+                 ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10,15,20)))
 
 summary(tune.out)
 
@@ -468,20 +495,34 @@ SVM - radial Accuracy -> 83.83%
 
 
 
+
+
 Logistic Regression Accuracy -> 84.21%
 
-Decision Tree Accuracy -> 83.08%
+Decision Tree Accuracy       -> 83.08%
 
 Random Forest Accuracy -> around 84.5%
 
-Boosting -> 84.21%
+Boosting Accuracy            -> 84.21%
 
-SVM linear Accuracy -> 83.46%
+SVM linear Accuracy          -> 83.46%
 
-SVM radial Accuracy -> 83.83%
+SVM radial Accuracy          -> 83.83%
 
 
 
+
+
+Creating submission file with RF model
+--------------
+```{r}
+
+final.pred <- predict(rf.update, newdata = test1, type="response")
+
+
+final <- data.frame(PassengerId = test$PassengerId, FinalPred = final.pred)
+head(final)
+```
 
 
 
