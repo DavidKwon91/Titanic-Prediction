@@ -8,7 +8,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-Titanic Survivor Prediction - Classification
+Titanic Survivor Prediction Classification
 =================
 
 Importing and Manipulating Data - Feature Engineering
