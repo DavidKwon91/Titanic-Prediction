@@ -728,7 +728,7 @@ test.data <- data.frame(cols = variables)
 test.data
 
 data.pval <- relationship.test(variables, test.data, dat)
-data.pval
+data.pval[,1:2]
 
 
 dat <- dat %>% subset(select=-c(PassengerId, family))
@@ -944,8 +944,7 @@ boost.model <- train(Survived~.,
                    trControl = control,
                    tuneGrid = boost.grid)
 
-
-boost.model
+boost.model$bestTune
 
 max(boost.model$results$Accuracy) 
 #84.44%
@@ -1063,6 +1062,6 @@ head(final)
 
 ```
 
-Public Score - The public score is different by seed, but it's about 78%
+Public Score - The public score is different by seed, but it's about 78~79%
 
 
