@@ -8,535 +8,1061 @@ editor_options:
   chunk_output_type: console
 ---
 
-Titanic Survivor Prediction Classification
+================
+Titanic Survivor Classification Prediction
 =================
 
 Importing and Manipulating Data - Feature Engineering
 -----------------
-```{r}
-library(caret)
+```{r Import Data}
 library(dplyr)
-library(MASS)
+library(ggplot2)
+library(rpart)
+library(rpart.plot)
+library(caret)
 
 #train and test
 train <- read.csv("Datasets/train.csv", stringsAsFactors = TRUE, na.strings = "")
-test <- read.csv("Datasets/test.csv", stringsAsFactors = TRUE)
+test <- read.csv("Datasets/test.csv", stringsAsFactors = TRUE, na.strings = "")
 
-#creating survived variables in test set
+
+#creating survived variables in test set and combinining train and test
 test$Survived <- NA
-
 dat <- rbind(train,test)
 
-summary(dat)
+```
 
-
+Survived and Pclass
+--------------------
+```{r Survived and Pclass}
 #convert survived and pclass to factor variable
 dat$Survived <- as.factor(dat$Survived)
 dat$Pclass <- as.factor(dat$Pclass)
+#Survived : 1 / no Survived : 0
 
-#Cabin Na values -> 0, otherwise 1
-dat$Cabin <- as.factor(ifelse(is.na(dat$Cabin), 0, 1))
+#Bar graph for Pclass vs Survived
+dat %>% filter(!is.na(Survived)) %>%
+  ggplot(aes(x=Pclass, fill=Survived))+
+  geom_bar()+
+  geom_label(stat="count", 
+             position=position_stack(0.5), 
+             aes(label=..count..))+
+  ggtitle("Pclass vs Survived")
 
+#Bar graph for Sex vs Survived
+dat %>% filter(!is.na(Survived)) %>%
+  ggplot(aes(x=Sex, fill=Survived))+
+  geom_bar()+
+  geom_label(stat="count", 
+             position=position_stack(0.5), 
+             aes(label=..count..))+
+  ggtitle("Sex vs Survived")
+
+
+dat %>% filter(!is.na(Survived)) %>%
+  ggplot(aes(x=Pclass, fill=Survived))+
+  geom_bar()+
+  geom_label(stat="count", 
+             position=position_stack(0.5), 
+             aes(label=..count..))+
+  ggtitle("Pclass vs Survived by Sex")+
+  facet_grid(~Sex)
+
+#In Pclass 1 and 2, obviously male mostly not survived and female survived
+#In Pclass 3, male mostly not survived, but female hard to predict whether surv or not
+
+
+```
+
+From Cabin, Cabin.ox
+--------------------
+```{r Cabin.ox}
+#Cabin NA values -> 0, otherwise 1
+dat$Cabin.ox <- as.factor(ifelse(is.na(dat$Cabin), 0, 1))
+table(dat$Cabin.ox)
+#no cabin : 0 / cabin : 1
+
+dat %>% filter(!is.na(Survived)) %>%
+  ggplot(aes(x=Cabin.ox, fill=Survived))+
+  geom_bar()+
+  geom_label(stat="count", 
+             position=position_stack(0.5), 
+             aes(label=..count..))+
+  ggtitle("Cabin.ox vs Survived")
+
+dat %>% filter(!is.na(Survived)) %>%
+  ggplot(aes(x=Cabin.ox, fill=Survived))+
+  geom_bar()+
+  geom_label(stat="count", 
+             position=position_stack(0.5), 
+             aes(label=..count..))+
+  ggtitle("Cabin.ox vs Survived by Sex")+
+  facet_grid(~Sex)
+
+#If Cabin is not NA, then more likely survived
+#no cabin likely not survived
+
+dat %>% filter(!is.na(Survived)) %>%
+  ggplot(aes(x=Cabin.ox, fill=Survived))+
+  geom_bar()+
+  geom_label(stat="count", 
+             position=position_stack(0.5), 
+             aes(label=..count..))+
+  ggtitle("Cabin.ox vs Survived by Pclass")+
+  facet_grid(~Pclass)
+
+#Also, notice Pclass 1 people mostly have cabin
+#Pclass 2 and 3 not
+
+dat %>% filter(!is.na(Survived)) %>%
+  ggplot(aes(x=Fare, fill=Cabin.ox))+
+  geom_density(alpha=0.3)+
+  ggtitle("Fare vs Cabin.ox")
+
+dat %>% filter(!is.na(Survived)) %>%
+  ggplot(aes(x=Cabin.ox, y=Fare))+
+  geom_boxplot()+
+  ggtitle("Fare vs Cabin.ox")
+
+#Fare difference by Cabin.ox
+
+```
+
+Function to make prop.table
+--------------------------
+```{r prop.func}
+#creating function to make prop.table
+
+prop.func <- function(predictor){
+  prop.tab <- data.frame(
+    prop.table(
+      matrix(
+        c(table(dat[1:891,predictor], dat$Survived[1:891])[,1],
+          table(dat[1:891,predictor], dat$Survived[1:891])[,2]),
+        ncol=2),
+      1))
+  colnames(prop.tab) <- c("no surv", "surv")
+  rownames(prop.tab) <- c(levels(dat[,predictor]))
+  
+  return(prop.tab)
+}
+```
+
+
+From Cabin, deck.surv
+-----------------
+```{r deck.surv}
+#deck from Cabin
+dat$deck <- as.factor(ifelse(is.na(substr(dat$Cabin,1,1)), "no", substr(dat$Cabin,1,1)))
+
+which(dat$deck == "T") #the element where is in traing set.. lets replace this to something else
+
+dat %>% 
+  subset(select = -c(PassengerId)) %>% 
+  filter(!is.na(Survived)) %>% 
+  group_by(deck) %>% 
+  summarise(count = n(),
+            mean = mean(Fare))
+#mean of Fare for deck "T" is close to the mean of Fare for deck "A" 
+#replace "T" to "A"
+
+dat$deck[dat$deck=="T"] <- "A"
+dat$deck <- as.factor(as.character(dat$deck))
+
+summary(dat$deck)
+
+#proportional bar graph 
+dat %>% filter(!is.na(Survived)) %>%
+  ggplot(aes(x=deck, fill=Survived))+
+  geom_bar(position = "fill")+
+  ggtitle("Deck Survival rate by Proportion")
+
+#count bar graph without no deck
+dat %>% filter(!is.na(Survived) & deck != "no") %>% 
+  ggplot(aes(x=deck, fill=Survived)) + 
+  geom_bar() + 
+  geom_label(stat = "count", 
+             position = position_stack(0.5), 
+             aes(label= ..count..))+
+  ggtitle("Deck Survival by count without no deck")
+
+table(dat$deck[1:891], dat$Survived[1:891])
+
+deck.prop <- prop.func("deck")
+
+#proportional deck table
+deck.prop
+
+#we might want to group up B/D/E together (which have high prob for survived)
+#so, B/C/D/E/F -> high prob surv rate deck
+#    A/G/no -> low prob surv rate
+dat$deck <- as.character(dat$deck)
+
+dat$deck.surv <- NA
+for(i in 1:nrow(dat)){
+  if(dat$deck[i] %in% c("B", "C", "D", "E","F")){
+    dat$deck.surv[i] <- "high"
+  }
+  if(dat$deck[i] %in% c("no", "A", "G")){
+    dat$deck.surv[i] <- "low"
+  }
+}
+
+table(dat$deck.surv)
+
+dat$deck.surv <- as.factor(dat$deck.surv)
+
+dat <- dat %>% subset(select=-c(deck))
+```
+
+
+
+From Cabin, cabin.freq.surv
+--------------------------
+```{r cabin.freq.surv}
+#cabin frequency.. might have relationship between cabin freq
+cabin.freq <- data.frame(table(dat$Cabin))
+
+
+dat$cabin.freq <- NA
+for(i in 1:nrow(dat)){
+  if(dat$Cabin[i] %in% cabin.freq$Var1){
+    dat$cabin.freq[i] <- cabin.freq$Freq[cabin.freq$Var1==dat$Cabin[i]]
+  }
+  else{
+    dat$cabin.freq[i] <- 0
+  }
+}
+dat$cabin.freq <- as.factor(dat$cabin.freq)
+summary(dat$cabin.freq)
+
+
+#proportional bar graph
+dat %>% filter(!is.na(Survived)) %>% 
+  ggplot(aes(x=cabin.freq, fill=Survived)) + 
+  geom_bar(position = "fill")+
+  ggtitle("Cabin Frequency Survival Rate by Proportion")
+
+#bar graph without no cabin
+dat %>% filter(!is.na(Survived) & cabin.freq != 0) %>% 
+  ggplot(aes(x=cabin.freq, fill=Survived)) + 
+  geom_bar() + 
+  geom_label(stat = "count", 
+             position = position_stack(0.5), 
+             aes(label= ..count..))+
+  ggtitle("Cabin Frequency Survival by Count")
+
+
+table(dat$cabin.freq[1:891], dat$Survived[1:891])
+
+cabin.freq.prop <- prop.func("cabin.freq")
+
+
+cabin.freq.prop
+
+#no cabin barely survived
+#cabin freq 1 / 2 / 3 / 4 / 5 more likely surv
+
+#no cabin , cabin freq 6 -> low
+#cabin freq 1,2,3,4,5    -> high
+
+dat$cabin.freq.surv <- NA
+
+for(i in 1:nrow(dat)){
+  if(dat$cabin.freq[i] %in% c(1,2,3,4,5)){
+    dat$cabin.freq.surv[i] <- "high"
+  }
+  if(dat$cabin.freq[i] %in% c(0,6)){
+    dat$cabin.freq.surv[i] <- "low"
+  }
+}
+
+dat$cabin.freq.surv <- as.factor(dat$cabin.freq.surv)
+table(dat$cabin.freq.surv)
+
+dat <- subset(dat, select = -c(Cabin, cabin.freq))
+```
+
+
+Dealing with NA values in Embarked and Fare
+--------------------------------
+```{r NA value in Embarked / Fare}
 #Gender -> male = 0, female = 1
 dat$Sex <- as.factor(ifelse(dat$Sex == "male", 0, 1))
 
-#NA values -> mean
-dat$Age[is.na(dat$Age)] <- mean(dat$Age, na.rm=TRUE) 
-dat$Fare[is.na(dat$Fare)] <- mean(dat$Fare, na.rm=TRUE)
-dat$Embarked[is.na(dat$Embarked)] <- "S"
+dat[is.na(dat$Embarked),]
+
+#Pclass = 1 / Sex = Female / have cabin / 
+#deck surv rate high / cabin freq surv rate high
+dat %>% 
+  filter(Pclass == 1 & 
+           Sex == 1 & 
+           Cabin.ox==1 & 
+           deck.surv == "high" & 
+           cabin.freq.surv == "high" & 
+           SibSp == 0 & 
+           Parch == 0) %>% group_by(Embarked) %>%
+  summarise(count = n(),
+            mean = mean(Fare),
+            min = min(Fare),
+            max = max(Fare))
 
 
+
+#Na value for Embarked
+dat$Embarked[is.na(dat$Embarked)] <- "C"
+
+dat[is.na(dat$Fare),]
+
+summary(aov(Fare~Cabin.ox, dat))
+summary(aov(Fare~Pclass, dat))
+
+#NA value for Fare
+dat[dat$Pclass == 3,] %>% 
+  group_by(Embarked, Cabin.ox, Pclass) %>% 
+  summarise(mean = mean(Fare, na.rm=TRUE))
+
+#Pclass 3 / Embarked S / no cabin
+#mean of Pclass 3 and Embarked S, and no cabin is 14.5
+
+dat$Fare[is.na(dat$Fare)] <- 14.5
+```
+
+
+From Ticket, ticket.alone
+--------------------------
+```{r ticket.alone}
+#Ticket
+ticket.alone <- data.frame(table(dat$Ticket))
+
+dat$ticket.alone <- NA
+for(i in 1:nrow(dat)){
+  if(dat$Ticket[i] %in% ticket.alone$Var1[ticket.alone$Freq==1]){
+    dat$ticket.alone[i] <- 0
+  }
+  if(dat$Ticket[i] %in% ticket.alone$Var1[ticket.alone$Freq>1]){
+    dat$ticket.alone[i] <- 1
+  }
+}
+
+table(dat$ticket.alone)
+
+dat$ticket.alone <- as.factor(dat$ticket.alone)
+```
+
+
+From Ticket, ticket.let.surv
+-------------------------
+```{r ticket.let.surv}
+#ticket by first letter
+dat$ticket.let <- substr(dat$Ticket, 1,1)
+
+ticket.let <- data.frame(table(dat$ticket.let))
+
+
+#proportional bar graph
+dat %>% filter(!is.na(Survived) ) %>% 
+  ggplot(aes(x=ticket.let, fill=Survived)) + 
+  geom_bar(position = "fill")+
+  ggtitle("Ticket by first letter surv rate by proportional")
+
+dat %>% filter(!is.na(Survived) ) %>% 
+  ggplot(aes(x=ticket.let, fill=Survived)) + 
+  geom_bar() + 
+  geom_label(stat = "count", 
+             position = position_stack(0.5), 
+             aes(label= ..count..))+
+  ggtitle("Ticket by first letter surv rate by count")
+
+
+table(dat$ticket.let[1:891], dat$Survived[1:891])
+
+dat$ticket.let <- as.factor(dat$ticket.let)
+
+ticket.let.prop <- prop.func("ticket.let")
+ticket.let.prop
+
+
+dat$ticket.let <- as.factor(dat$ticket.let)
+
+die <- rownames(ticket.let.prop[ticket.let.prop$`no surv`>=0.5,])
+surv <- rownames(ticket.let.prop[ticket.let.prop$`no surv`<0.5,])
+
+dat$ticket.let <- as.character(dat$ticket.let)
+dat$ticket.let.surv <- NA
+for(i in 1:nrow(dat)){
+  if(dat$ticket.let[i] %in% die){
+    dat$ticket.let.surv[i] <- "low"
+  }
+  if(dat$ticket.let[i] %in% surv){
+    dat$ticket.let.surv[i] <- "high"
+  }
+}
+
+dat$ticket.let.surv <- as.factor(dat$ticket.let.surv)
+summary(dat$ticket.let.surv)
+
+
+dat <- dat %>% subset(select =-c(Ticket, ticket.let))
+```
+
+
+Creating family variable
+-----------------------
+```{r family}
 #family size (if family = 1, then it's alone)
 dat$family <- dat$SibSp + dat$Parch + 1
+#1 == alone
+
+dat <- subset(dat, select = -c(SibSp, Parch))
+```
 
 
+From Name, name and surname.freq.surv
+Dealing with NA values in Age
+---------------------------
+```{r name / surname.freq.surv / NA in Age}
 #converting names
-name <- dat$Name
-name <- sub(".*, ", "", name)
-name <- sub("\\..*", "", name)
-head(name)
+dat <- dat %>% 
+  mutate(name = sub("\\..*$", "", sub("^.*, ", "", Name)), 
+         surname = sub(",.*$", "", Name))
 
-dat$Name <- as.character(name)
+summary(as.factor(dat$name))
+summary(as.factor(dat$surname))
+#name first
 
-dat$Name[dat$Name %in% c("Capt","Col","Don","Dr","Jonkheer", "Lady", "Major","Mlle","Mme","Ms","Rev","Sir","the Countess","Dona")] <- "unknown"
+dat %>% 
+  group_by(name, Sex) %>% 
+  summarise(mean = mean(Age, na.rm=TRUE),
+            min = min(Age, na.rm=TRUE),
+            max = max(Age, na.rm=TRUE),
+            count = n())
 
-dat$Name <- as.factor(dat$Name)
-table(dat$Name)
+
+#Master / Miss / Mr / Mrs
+#Matser seems obvious young male
+#Mr teenage to old male
+#Miss and Mrs female in range young to old
+
+#Age first.. to predict name by age
+
+dat %>% filter(is.na(Age)) %>% group_by(name,Sex) %>% tally()
+
+#dealing with Dr
+dat %>% filter(name == "Dr")
+
+dat$Age[which(dat$name == "Dr" & is.na(dat$Age))] <- mean(dat$Age[which(dat$name == "Dr")], na.rm=TRUE)
+
+#dealing with Ms
+dat %>% filter(name == "Ms")
+
+dat$Age[which(dat$name == "Ms" & is.na(dat$Age))] <- mean(dat$Age[which(dat$name == "Ms")], na.rm=TRUE)
+
+dat$name <- as.character(dat$name)
+dat$surname <- as.character(dat$surname)
 
 
-#dropping variables 
-dat <- subset(dat, select = -c(PassengerId, SibSp, Parch, Ticket))
+summary(aov(Age~Pclass, dat))
+summary(aov(Age~name, dat))
+#I use Pclass and name to predict NA values in Age
+#replacing NA's of Age with the mean by name and Pclass, respectively
 
-names(dat)
+dat %>% filter(is.na(Age)) %>% group_by(name,Pclass) %>% tally()
+
+dat[dat$name %in% c("Mr", "Miss", "Mrs", "Master"),] %>% 
+  group_by(name, Pclass) %>% 
+  summarise(count = n(), 
+            mean = mean(Age, na.rm=TRUE),
+            min = min(Age, na.rm=TRUE),
+            max = max(Age, na.rm=TRUE))
+
+for(i in 1:nrow(dat)){
+  if(is.na(dat$Age[i])){
+    #Master
+    if(dat$name[i] == "Master" & dat$Pclass[i] == 3){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Master" & dat$Pclass == 3)], na.rm=TRUE)
+    }
+    
+    #Miss
+    if(dat$name[i] == "Miss" & dat$Pclass[i] == 1){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Miss" & dat$Pclass == 1)], na.rm=TRUE)
+    }
+    if(dat$name[i] == "Miss" & dat$Pclass[i] == 2){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Miss" & dat$Pclass == 2)], na.rm=TRUE)
+    }
+    if(dat$name[i] == "Miss" & dat$Pclass[i] == 3){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Miss" & dat$Pclass == 3)], na.rm=TRUE)
+    }
+    
+    #Mr
+    if(dat$name[i] == "Mr" & dat$Pclass[i] == 1){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Mr" & dat$Pclass == 1)], na.rm=TRUE)
+    }
+    if(dat$name[i] == "Mr" & dat$Pclass[i] == 2){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Mr" & dat$Pclass == 2)], na.rm=TRUE)
+    }
+    if(dat$name[i] == "Mr" & dat$Pclass[i] == 3){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Mr" & dat$Pclass == 3)], na.rm=TRUE)
+    }
+    
+    #Mrs
+    if(dat$name[i] == "Mrs" & dat$Pclass[i] == 1){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Mrs" & dat$Pclass == 1)], na.rm=TRUE)
+    }
+    if(dat$name[i] == "Mrs" & dat$Pclass[i] == 2){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Mrs" & dat$Pclass == 2)], na.rm=TRUE)
+    }
+    if(dat$name[i] == "Mrs" & dat$Pclass[i] == 3){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Mrs" & dat$Pclass == 3)], na.rm=TRUE)
+    }
+    
+    #Ms
+    if(dat$name[i] == "Ms" & dat$Pclass[i] == 3){
+      dat$Age[i] <- mean(dat$Age[which(dat$name == "Ms" & dat$Pclass == 3)], na.rm=TRUE)
+    }
+  }
+}
+
+
+#dealing with other names
+dat$name[!dat$name %in% c("Mr", "Miss", "Mrs", "Master") ]
+
+
+dat %>% filter(!name %in% c("Mr", "Miss", "Mrs", "Master")) %>% 
+  group_by(name, Sex) %>% 
+  summarise(count = n(), 
+            mean = mean(Age),
+            min = min(Age, na.rm=TRUE),
+            max = max(Age, na.rm=TRUE))
+
+dat[dat$name %in% c("Mr", "Miss", "Mrs", "Master"),] %>% 
+  group_by(name) %>% 
+  summarise(count = n(), 
+            mean = mean(Age, na.rm=TRUE),
+            min = min(Age, na.rm=TRUE),
+            max = max(Age, na.rm=TRUE))
+
+#Master max age 14.5
+#Master -> young male : sex==male & Age < 14.5
+#Mr -> adult male :     sex==male & Age > 14.5
+#Miss -> adult female : sex==female & Age < 14
+#Mrs -> adult female :  sex==female & Age > 14
+
+for(i in 1:nrow(dat)){
+  if(!is.na(dat$Age[i])){
+    if(!dat$name[i] %in% c("Mr", "Miss", "Mrs", "Master")){
+      if(dat$Sex[i] == 0 & dat$Age[i] <= 14.5){
+      dat$name[i] = "Master"
+      }
+      if(dat$Sex[i] == 0 & dat$Age[i] > 14.5){
+      dat$name[i] <- "Mr"
+      }
+      if(dat$Sex[i] == 1 & dat$Age[i] < 14){
+      dat$name[i] <- "Miss"
+      }
+      if(dat$Sex[i] == 1 & dat$Age[i] > 14){
+      dat$name[i] <- "Mrs"
+      }
+    }
+  }
+}
+
+
+dat$name <- as.factor(as.character(dat$name))
+
+table(dat$name)
+
+#surname frequency
+surname.freq <- data.frame(table(dat$surname))
+
+dat$surname.freq <-NA
+
+for(i in 1:nrow(dat)){
+  for(j in 1:11){
+    if(dat$surname[i] %in% surname.freq$Var1[surname.freq$Freq == j]){
+      dat$surname.freq[i] <- j
+    }
+  }
+}
+
+dat$surname.freq <- as.factor(dat$surname.freq)
+
+
+#bar graph
+dat %>% filter(!is.na(Survived)) %>% 
+  ggplot(aes(x=surname.freq, fill=Survived)) + 
+  geom_bar(position = "fill")+
+  ggtitle("Surname Frequency Survival Rate by Proportion")
+
+dat %>% filter(!is.na(Survived)) %>% 
+  ggplot(aes(x=surname.freq, fill=Survived)) + 
+  geom_bar() + 
+  geom_label(stat = "count", position = position_stack(0.5), aes(label= ..count..))+
+  ggtitle("Surname Frequency Survival by Count")
+
+
+table(dat$surname.freq[1:891], dat$Survived[1:891])
+
+
+
+surname.freq.prop <- prop.func("surname.freq")
+
+surname.freq.prop
+#notice that surname.freq 2,3 is likely hard to predict 
+#however, more the surname.freq increased from 4 to 11, they are more likely not survived
+
+#therefore, low surv rate -> 1,4,5,6,7,8,11
+#unknown -> 2,3
+
+dat$surname.freq <- as.character(dat$surname.freq)
+
+dat$surname.freq.surv <- NA
+for(i in 1:nrow(dat)){
+  if(dat$surname.freq[i] %in% c(1,4,5,6,7,8,11)){
+    dat$surname.freq.surv[i] <- "low"
+  }
+  if(dat$surname.freq[i] %in% c(2,3)){
+    dat$surname.freq.surv[i] <- "unknown"
+  }
+}
+dat$surname.freq.surv <- as.factor(dat$surname.freq.surv)
+
+table(dat$surname.freq.surv)
+
+dat <- subset(dat, select=-c(surname.freq, Name, surname))
 
 summary(dat)
-
-train1 <- dat[1:891,] #train.csv 
-test1 <- dat[892:1309,] #test.csv
-
-
-set.seed(125)
-
-#cv splits
-split<-createDataPartition(y=train1$Survived,p=0.7,list=FALSE)
-
-training <- train1[split,] #training set of train data
-testing <- train1[-split,] #test set of train data, which is validation set
-
-#test1 is the test dataset
-
-
 ```
 
 
 
-Data Exploration
-------------------
-```{r}
-library(dplyr)
-library(purrr)
-library(tidyr)
-library(ggplot2)
+Investigating correlation or relationship between each variables in our dataset
+-----------------------------
+```{r correlation or relationship between each vars}
+#Let's see the correlation or relationship between each variables in our dataset
+
+#factor vs factor - chisq test : null H0 = two factor variables are independent
+#factor vs numeric - anova test : null H0 = at least one factor has different mean than others
+#numeric vs numeric - correlation : linear relationship between vars, 
+#more than 0.5 means they have some relationship to each other
+
+relationship.test <- function(variables, dummy.data, data){
+
+  for(i in variables){
+    for(j in variables){
+      
+      #factor vs factor : chisq.test
+      if(is.factor(data[,i])){
+        if(is.factor(data[,j])){
+          dummy.data[dummy.data$cols == i,j] <- round(chisq.test(data[,i], data[,j])$p.value,3)
+          }
+      }
+      
+      #factor vs numeric : anova
+      if(is.factor(data[,i])){
+        if(is.numeric(data[,j])){
+          dummy.data[dummy.data$cols == i,j] <-
+            round(summary(aov(data[,j]~data[,i]))[[1]][["Pr(>F)"]][[1]],3)
+          }
+      }
+      if(is.numeric(data[,i])){
+        if(is.factor(data[,j])){
+          dummy.data[dummy.data$cols == i,j] <- 
+            round(summary(aov(data[,i]~data[,j]))[[1]][["Pr(>F)"]][[1]],3)
+          }
+        }
+    
+      #numeric vs numeric : correlation
+      if(is.numeric(data[,i])){
+        if(is.numeric(data[,j])){
+          dummy.data[dummy.data$cols == i,j] <- round(cor(data[,i], data[,j]),3)
+          }
+        }
+    }
+  }
+  
+  return(dummy.data)
+}
+
+#creating variables
+variables <- colnames(dat)[2:ncol(dat)]
+
+#dummy data
+test.data <- data.frame(cols = variables)
+
+data.pval <- relationship.test(variables, test.data, dat)
+data.pval
 
 
-#all variables - factor
-training %>% keep(is.factor) %>% gather() %>%
-  ggplot(aes(value)) + 
-  facet_wrap(~key, scales="free")+
-  geom_bar()
-
-#all variables - factor
-training %>% keep(is.numeric) %>% gather() %>%
-  ggplot(aes(value)) +
-  facet_wrap(~key, scales="free")+
-  geom_histogram(bins=30)+
-  geom_density()
+#factor vs factor : if <0.05 (p value), highly dependent, if not, independent
+#factor vs numeric : if <0.05, at least one factor has different mean than others. 
+#if not, all factor has similar mean (non linear)
+#numeric vs numeric : if <0.5, low correlation, if not, high correlation
+```
 
 
+Creating familyGroup from investigation of relationship between each variables
+----------------------------
+```{r familyGroup}
+#Lets make family to be better predictor
 
-pairs(training,col=train$Survived)
+tr <- rpart(Survived~family, dat)
+tr
+rpart.plot(tr)
+
+
+dat %>% filter(!is.na(Survived)) %>% 
+  ggplot(aes(x=family, fill=Survived))+
+  geom_density(alpha = 0.3)+
+  geom_vline(xintercept=c(1.5, 4.5))
+#1.5 and 4.5
+
+dat$familyGroup <- as.factor(ifelse(dat$family < 1.5, "alone",
+                                    ifelse(dat$family > 1.5 & dat$family < 4.5, "small fam", "large fam")))
+
+table(dat$familyGroup)
+
+
+variables <- colnames(dat)[2:ncol(dat)]
+test.data <- data.frame(cols = variables)
+test.data
+
+data.pval <- relationship.test(variables, test.data, dat)
+data.pval
+
+
+dat <- dat %>% subset(select=-c(PassengerId, family))
+
+summary(dat)
+```
+
+Splitting train and test set to start modeling
+-----------------------------------------
+```{r splitting train and test}
+
+#train / test
+training <- dat %>% filter(!is.na(Survived))
+testing <- dat %>% filter(is.na(Survived))
+
+summary(training)
+summary(testing)
+
+#we have 14 predictors. 
+#we might want to remove some predictors that have low importance while modeling
+```
+
+From Cabin..
+  - Cabin.ox : Cabin NA = 0 or Cabin = 1
+  - deck.surv : extract the first letter of cabin, with the probability of survival for the deck, splitted into 2 groups, which are high / low
+  - cabin.freq.surv : 2 groups by surv rate with cabin frequency
+
+from Ticket..
+  - ticket.alone : unique ticket = 0 other 1
+  - ticket.let.surv : with the first letter of ticket, splitted into 2 groups by surv rate of the ticket letter
+
+from Name..
+  - name : Master / Miss / Mr / Mrs
+  - surname.freq.surv : groups by surv rate with surname frequency
+
+
+
+Caret - Cross Validation
+Creating useful function for modeling
+---------------------
+```{r modeling / accuracy / trainControl function}
+#creating function for Caret modeling
+
+model <- function(method, training, control,grid,...){
+
+  if(is.null(grid)){
+    model.fit <- train(Survived~.,
+                     data = training,
+                     method = method,
+                     trControl = control,
+                     ...)
+    return(model.fit)
+  }
+
+  else{
+    model.fit <- train(Survived~.,
+                     data = training,
+                     method = method,
+                     trControl = control,
+                     tuneGrid = grid,
+                     ...)
+    return(model.fit)
+  }
+}
+
+#accuracy of model
+acc <- function(pred, act, data){
+  return(sum(diag(table(pred, act)))/nrow(data))
+}
+
+#10 folds cv
+control <- trainControl(method = "cv", number = 10)
 
 ```
 
 
-Logistic Regression
----------
-
-```{r}
-library(boot)
-library(ROCR)
-
-logistic.fit <- glm(Survived ~., data=training, family=binomial)
-
-summary(logistic.fit)
-
-logistic.probs <- predict(logistic.fit, newdata = testing, type="response")
-
-logistic.pred <- ifelse(logistic.probs > 0.5, 1, 0)
-
-test.pred <- testing$Survived
-
-table(logistic.pred, test.pred)
-
-sum(diag(table(logistic.pred, test.pred)))/nrow(testing)
-#accuracy = 84.21%
-
-#cv error with 10 folds
-cv.glm(training, logistic.fit, K=10)$delta[1]
-#around 13% error rate
-
-ROCpred <- prediction(logistic.pred, test.pred)
-ROCperf <- performance(ROCpred, "tpr", "fpr")
-plot(ROCperf, colorize = TRUE, print.cutoffs.at = seq(0.1,0.1), text.adj = c(-0.2,1.7))
-
-performance(ROCpred, "auc")@y.values
-#AUC value = 0.8237
-
-confusionMatrix(as.factor(logistic.pred), test.pred)
-
-```
-
-Logistic Regression Accuracy -> 84.21%
-
-
-Decision Tree
---------------
-```{r}
-library(tree)
-
-tree.training <- tree(Survived~., training)
-plot(tree.training);text(tree.training,pretty=0)
-summary(tree.training)
-
-tree.pred=predict(tree.training,testing,type="class") #with test datasets
-
-table(tree.pred , testing$Survived)
-sum(diag(table(tree.pred, testing$Survived)))/nrow(testing)
-#accuracy 83.08%
-
-deviance(tree.training)
-misclass.tree(tree.training)
-
-
-#pruning via cv
-cv.training=cv.tree(tree.training,FUN=prune.misclass)
-cv.training
-plot(cv.training)
-plot(cv.training$size, cv.training$dev, type="b")
-
-
-prune.training <- prune.misclass(tree.training,best=7)
-plot(prune.training);text(prune.training,pretty=0)
-
-#pruned prediction
-tree.pred <- predict(prune.training, testing, type="class")
-table(tree.pred, testing$Survived)
-sum(diag(table(tree.pred, testing$Survived)))/nrow(testing)
-#83.08%
-
-class(tree.pred)
-class(test.pred)
-
-ROCpred <- prediction(as.numeric(tree.pred), test.pred)
-ROCperf <- performance(ROCpred, "tpr", "fpr")
-plot(ROCperf, colorize = TRUE, print.cutoffs.at = seq(0.1,0.1), text.adj = c(-0.2,1.7))
-
-
-performance(ROCpred, "auc")@y.values
-#AUC = 0.8109
-
-confusionMatrix(tree.pred, test.pred)
-
-```
-
-Decision Tree Accuracy -> 83.08%
-
-
+I will use Random Forest / Gradient Boosting Method / Support Vector Machine with kernel radial
 
 
 Random Forest
---------------------
-```{r}
-library(randomForest)
-library(MASS)
+-------------
+```{r Random Forest}
+
+#typical mtry in classification = sqrt(# of predictors)
+rf.fit <- train(Survived~., data = training,
+                method="rf", trControl = control, 
+                ntree=500, importance = TRUE, 
+                tuneGrid = expand.grid(mtry = round(sqrt(ncol(training)-1))))
+
+rf.fit
+
+plot(rf.fit$finalModel)
+varImp(rf.fit)
+
+rf.fit.result <- data.frame(rf.fit$finalModel$importance[,"MeanDecreaseAccuracy"])
+colnames(rf.fit.result) <- "MeanDecreaseAccuracy"
+
+rf.fit.result
+
+rf.fit.result %>% mutate(name = rownames(rf.fit.result)) %>% 
+  arrange(MeanDecreaseAccuracy) %>%
+  ggplot(aes(x=reorder(name, MeanDecreaseAccuracy),y=MeanDecreaseAccuracy))+
+  geom_point()+
+  theme(axis.text.x = element_text(angle=90))
+#remove Embarked / surname.freq.surv 
 
 
+#tuning parameter mtry and ntree by cross validation
+#typical mtry is sqrt(# of predictor)
+#ntree: in small dataset -> 100 in large dataset -> 500~1000 sufficient
+#larger ntree is more stable, but takes long time
+rf.grid <- expand.grid(mtry = seq(2,10, by=2))
 
-#base random forest
-rf.training <- randomForest(Survived~., data=training, importance=TRUE)
-rf.training
-#2 mtry - classification defaults = sqrt(p) = sqrt(8) ~= 2
-#n.tree = 500, oob error rate = aroun 17%
+rf.acc <- data.frame(ntree = seq(100,1000, by=100), minacc = NA, acc = NA)
 
-#find best mtry
-oob.err=double(8)
-test.err=double(8)
-
-for(mtry in 1:8){
-  fit <- randomForest(Survived~., data=training, mtry=mtry, ntree=500)
-  oob.err[mtry] <- 1-sum(diag(table(training$Survived,fit$predicted)))/nrow(training)
-  pred <- predict(fit, testing)
-  test.err[mtry] <- 1-sum(diag(table(testing$Survived,pred)))/nrow(testing)
-  cat(mtry," ")
+for(i in seq(100, 1000, by=100)){
+  rf.fit <- train(Survived~., data=training %>% subset(select = -c(Embarked, surname.freq.surv)),
+                  method = "rf", trControl = control, 
+                  ntree=i, tuneGrid = rf.grid, importance = TRUE)
+  rf.acc[rf.acc$ntree == i,2] <- max(rf.fit$results$Accuracy) -
+    rf.fit$results$AccuracySD[which.max(rf.fit$results$Accuracy)]
+  rf.acc[rf.acc$ntree == i,3] <- max(rf.fit$results$Accuracy)
 }
 
-matplot(1:mtry,cbind(test.err,oob.err),pch=19,col=c("red","blue"),type="b",ylab="Error Rate")
-legend("topright",legend=c("Test","OOB"),pch=19,col=c("red","blue"))
-#2 mtry might be the best
+rf.acc
 
-#updated random forest
-rf.training.update <- randomForest(Survived~., data=training, mtry=2, importance=TRUE, ntree=500)
-rf.training.update
+ggplot(rf.acc, aes(x=ntree, y=acc))+
+  geom_line()+
+  geom_point()
 
-rf.pred <- predict(rf.training.update, testing)
-table(testing$Survived, rf.pred)
-sum(diag(table(testing$Survived,rf.pred)))/nrow(testing)
-#around 84.58% accuracy
-#since random forest provides different accuracy in every try, 
-#I made a function to get a mean value of the accuracy with few number of tries
+g.ntree <- rf.acc$ntree[which.max(rf.acc$minacc)]
+g.ntree
+#I will choose the ntree that has maximum value of minacc = max accuracy - accuracy sd
 
-mean.acc <- function(training, testing, mtry, ntree, try, formula){
-  acc <- NULL
-  
-  for(i in 1:try){
-  randomFtrain <- randomForest(formula, data=training, mtry=mtry, importance=TRUE, ntree=ntree)
-  randomFpred <- predict(randomFtrain, testing)
-  acc[i] <- sum(diag(table(testing$Survived, randomFpred)))/nrow(testing)
-  }
-  
-  return(mean(acc))
-}
+rf.model <- train(Survived~., 
+                  data=training %>% subset(select=-c(Embarked, surname.freq.surv)), 
+                  method = "rf", trControl = control, 
+                  ntree=g.ntree, tuneGrid = rf.grid, importance=TRUE)
 
-#2 mtry, 500 ntree, 10 tries
-mean.acc(training = training, testing = testing, mtry = 2, ntree = 500, try = 10, formula = as.formula(Survived~.,))
-#around 84.5% accuracy 
+rf.model
 
-importance(rf.training.update)
-varImpPlot(rf.training.update)
+plot(rf.model$finalModel)
+max(rf.model$results$Accuracy)
+#about 83%
+
+varImp(rf.model)
 
 
-#we can improve our RF model by removing Embarked
-rf.update <- randomForest(Survived~.-Embarked, data=training, mtry=2, importance=TRUE, ntree=500)
-rf.update
+rf.model.result <- data.frame(rf.model$finalModel$importance[,"MeanDecreaseAccuracy"])
+colnames(rf.model.result) <- "MeanDecreaseAccuracy"
 
-rf.pred <- predict(rf.update, testing)
-table(testing$Survived, rf.pred)
-sum(diag(table(testing$Survived,rf.pred)))/nrow(testing)
-#around 84%
+rf.model.result
 
-mean.acc(training, testing, mtry = 2, ntree = 500, try = 10, formula = as.formula(Survived~.-Embarked))
-#accruacy around 84.3%
-
-importance(rf.update)
-varImpPlot(rf.update)
+rf.model.result %>% mutate(name = rownames(rf.model.result)) %>% 
+  arrange(MeanDecreaseAccuracy) %>%
+  ggplot(aes(x=reorder(name, MeanDecreaseAccuracy),y=MeanDecreaseAccuracy))+
+  geom_point()+
+  theme(axis.text.x = element_text(angle=90))
 
 
-class(rf.pred)
+rf.minacc <- max(rf.model$results$Accuracy) - 
+  rf.model$results$AccuracySD[which.max(rf.model$results$Accuracy)] 
+rf.minacc
+#about 80%
 
-ROCpred <- prediction(as.numeric(rf.pred), test.pred)
-ROCperf <- performance(ROCpred, "tpr", "fpr")
-plot(ROCperf, colorize = TRUE, print.cutoffs.at = seq(0.1,0.1), text.adj = c(-0.2,1.7))
+#predict on real test
+rf.pred <- predict(rf.model, training)
 
+confusionMatrix(rf.pred, training$Survived)
+#93.15%
 
-performance(ROCpred, "auc")@y.values
-#AUC ~= around 0.8212
+#training accuracy - cv accuracy
+acc(rf.pred, training$Survived, training) - max(rf.model$results$Accuracy)
+#0.0987
 
-confusionMatrix(rf.pred, test.pred)
 
 ```
 
-Random Forest Accuracy -> around 84.21%
-
-Boosting
-------------------
-
-```{r}
-library(gbm)
-set.seed(123)
-boost.training <- gbm(as.character(Survived)~., data=training, 
-                      distribution = "bernoulli", n.trees = 500, 
-                      interaction.depth = 3, shrinkage = 0.01, cv.folds=5)
-
-summary(boost.training)
-
-
-#test on the training set
-boost.pred <- predict(boost.training, newdata = training, n.trees = 500, type = "response") #prob
-boost.pred <- ifelse(boost.pred > 0.5, 1, 0)
-
-table(training$Survived, boost.pred)
-sum(diag(table(training$Survived, boost.pred)))/nrow(training)
-#86.08% accuracy
-
-
-#test on the test set
-boost.pred <- predict(boost.training, newdata = testing, n.trees = 500, type = "response")
-
-boost.pred <- ifelse(boost.pred > 0.5, 1, 0)
-
-table(testing$Survived, boost.pred)
-sum(diag(table(testing$Survived, boost.pred)))/nrow(testing)
-#83.83% accuracy
-
-
-#cross validation to get the best ntree
-folds <- sample(rep(1:5, length = nrow(training)))
-folds
-table(folds)
-ntree <- seq(500, 4000, by=500)
-cv.errors <- matrix(NA, length(ntree),5)
-cv.errors <- cbind(ntree, cv.errors)
-cv.errors
-
-for(i in 1:5){
-  for(j in ntree){
-    boost.fit <- gbm(as.character(Survived)~., 
-                     data = training[folds != i,], distribution = "bernoulli", 
-                     n.trees = j, interaction.depth = 3, 
-                     shrinkage = 0.01, verbose = F)
-    
-    boost.pred <- predict(boost.fit, training[folds == i,], n.trees = j)
-    boost.pred <- ifelse(boost.pred > 0.5, 1, 0)
-    
-    cv.errors[which(j==ntree), i+1] = 
-      1- sum(diag(table(training$Survived[folds==i], boost.pred)))/nrow(training[folds==i, ])
-  }
-}
-
-cv.errors
-cv.errors1 <- cv.errors[,-1]
-cv.errors1
-
-
-cv.error.rates=sqrt(apply(cv.errors1,1,mean))
-which.min(cv.error.rates)
-plot(cv.error.rates,pch=19,type="b")
 
 
 
+Gradient Boosting Method
+-------------
 
-boost.training <- gbm(as.character(Survived)~., 
-                      data=training, distribution = "bernoulli", 
-                      n.trees = 1000, interaction.depth = 3, 
-                      shrinkage = 0.01, cv.folds=5)
+```{r GBM}
+#modeling without tuning parameter
+boost.model <- train(Survived~.,
+                   data = training,
+                   method = "gbm",
+                   verbose = FALSE,
+                   trControl = control,
+                   tuneGrid = NULL)
 
-summary(boost.training)
-
-
-#test on the test set
-boost.pred <- predict(boost.training, newdata = testing, n.trees = 1000, type = "response")
-boost.pred <- ifelse(boost.pred > 0.5, 1, 0)
-
-table(testing$Survived, boost.pred)
-sum(diag(table(testing$Survived, boost.pred)))/nrow(testing)
-#84.21% accuracy
-
-
-ROCpred <- prediction(as.numeric(boost.pred), test.pred)
-ROCperf <- performance(ROCpred, "tpr", "fpr")
-plot(ROCperf, colorize = TRUE, print.cutoffs.at = seq(0.1,0.1), text.adj = c(-0.2,1.7))
-
-
-performance(ROCpred, "auc")@y.values
-#auc = 0.8256
-
-confusionMatrix(as.factor(boost.pred), testing$Survived)
-
-```
-
-Boosting -> 84.21%
-
-SVM - linear 
-----------------------
-
-```{r}
-library(e1071)
-set.seed(123)
-svm.fit <- svm(Survived~., data=training, scale=FALSE, kernel="linear", cost=5)
-print(svm.fit)
-
-summary(svm.fit)
-
-tune.out <- tune(svm, Survived~., data=training, 
-                 kernel = "linear", 
-                 ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10,15,20)))
-
-summary(tune.out)
-
-#best model with the C values (tuning parameter)
-tune.out$best.model
-
-svm.best <- tune.out$best.model
-summary(svm.best)
-
-svm.pred <- predict(svm.best, testing, type="class")
-table(predict = svm.pred, truth = testing$Survived)
-sum(diag(table(svm.pred, testing$Survived)))/nrow(testing)
-#83.46 accuracy
-
-
-ROCpred <- prediction(as.numeric(svm.pred), test.pred)
-ROCperf <- performance(ROCpred, "tpr", "fpr")
-plot(ROCperf, colorize = TRUE, print.cutoffs.at = seq(0.1,0.1), text.adj = c(-0.2,1.7))
-
-
-performance(ROCpred, "auc")@y.values
-#auc = 0.8139
-
-confusionMatrix(svm.pred, testing$Survived)
-
-```
-
-SVM linear Accuracy -> 83.46%
+boost.model
+summary(boost.model$finalModel)
+#surname.freq.surv / Embarked
 
 
 
-SVM - radial kernel
-------------------
-```{r}
-svm.fit <- svm(Survived~., data=training, scale=FALSE, kernel="radial", cost=5)
-print(svm.fit)
+#Grid Search
+#I put relatively large value of shrinkage to prevent overfitting
+boost.grid <- expand.grid(n.trees = seq(100,6000, by=150),
+                          interaction.depth = c(1,2,3,4),
+                          shrinkage = c(0.01,0.1),
+                          n.minobsinnode = c(10))
 
-summary(svm.fit)
-
-tune.out <- tune(svm, Survived~., data=training, 
-                 kernel = "radial", 
-                 ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10,15,20)))
-
-summary(tune.out)
-
-tune.out$best.model
-
-svm.best <- tune.out$best.model
-summary(svm.best)
-
-svm.pred <- predict(svm.best, testing, type="class")
-table(predict = svm.pred, truth = testing$Survived)
-sum(diag(table(svm.pred, testing$Survived)))/nrow(testing)
-#83.83% accuracy
+#modeling
+boost.model <- train(Survived~.,
+                   data = training %>% 
+                     subset(select = -c(Embarked, surname.freq.surv)),
+                   method = "gbm",
+                   verbose = FALSE,
+                   trControl = control,
+                   tuneGrid = boost.grid)
 
 
-ROCpred <- prediction(as.numeric(svm.pred), test.pred)
-ROCperf <- performance(ROCpred, "tpr", "fpr")
-plot(ROCperf, colorize = TRUE, print.cutoffs.at = seq(0.1,0.1), text.adj = c(-0.2,1.7))
+boost.model
+
+max(boost.model$results$Accuracy) 
+#84.44%
+
+boost.minacc <- max(boost.model$results$Accuracy) - 
+  boost.model$results$AccuracySD[which.max(boost.model$results$Accuracy)] 
+boost.minacc
+#81.28%
+
+plot(boost.model)
+
+summary(boost.model$finalModel)
+
+boost.model$finalModel$tuneValue$n.trees
+
+#predict on training
+boost.pred <- predict(boost.model, training, 
+                      n.trees=boost.model$finalModel$tuneValue$n.trees)
 
 
-performance(ROCpred, "auc")@y.values
-#auc = 0.8170
+confusionMatrix(boost.pred, training$Survived)
+#88.78%
 
-confusionMatrix(svm.pred, testing$Survived)
-
+acc(boost.pred, training$Survived, training) - max(boost.model$results$Accuracy)
+#0.0437
 
 
 
 ```
 
-SVM - radial Accuracy -> 83.83%
+
+
+SVM - kernel radial
+-------------------
+
+```{r SVM}
+
+svm.radial <- model("svmRadial", training, control, grid = NULL, tuneLength = 10)
+svm.radial 
+
+max(svm.radial$results$Accuracy)
+#83.16%
+
+varImp(svm.radial)
+#name and Age
+
+#Grid Search for tuning parameter
+svm.grid <- expand.grid(sigma = seq(0.01,0.1, by=0.01),
+                        C = seq(0.01,2.01,by=0.25))
+
+svm.radial <- model("svmRadial", training %>% subset(select = -c(name, Age)), 
+                    control, 
+                    grid = svm.grid)
+
+svm.radial
+max(svm.radial$results$Accuracy)
+#0.8160
+
+#on training
+svm.radial.pred <- predict(svm.radial, training)
+
+confusionMatrix(svm.radial.pred, training$Survived)
+#0.8395
+
+acc(svm.radial.pred, training$Survived, training) - max(svm.radial$results$Accuracy)
+#0.0235
+```
 
 
 
 
 
-Logistic Regression Accuracy -> 84.21%
 
-Decision Tree Accuracy       -> 83.08%
-
-Random Forest Accuracy -> around 84.5%
-
-Boosting Accuracy            -> 84.21%
-
-SVM linear Accuracy          -> 83.46%
-
-SVM radial Accuracy          -> 83.83%
+Ensembling models in a dataset
+-------------
+```{r Ensembling models}
 
 
+#prediction on test
+
+rf.test.pred <- predict(rf.model, testing)
+boost.test.pred <- predict(boost.model, testing)
+svm.radial.pred <- predict(svm.radial, testing)
+
+ensembled.test <- data.frame(PassengerId = test$PassengerId, 
+                             rf = rf.test.pred, 
+                             boost= boost.test.pred, 
+                             svm = svm.radial.pred)
+
+#Take average of the predicting value by 3 models : Random Forest / Gradient Boosting / SVM - Radial
+ensembled.test$mean <- as.factor(round((as.numeric(ensembled.test$rf) + 
+                                          as.numeric(ensembled.test$boost) + 
+                                          as.numeric(ensembled.test$svm) - 3)/3))
+
+ensembled.test$PassengerId <- as.character(ensembled.test$PassengerId)
+
+summary(ensembled.test)
+
+```
 
 
 
-Creating submission file with RF model
+Creating submission
 --------------
-```{r}
+```{r Submission}
 
-final.pred <- predict(rf.update, newdata = test1, type="response")
+final.pred <- ensembled.test$mean
+final.pred
 
+final <- data.frame(PassengerId = test$PassengerId, Survived = final.pred)
 
-final <- data.frame(PassengerId = test$PassengerId, FinalPred = final.pred)
 head(final)
+
+#write.csv(final, "/Users/DavidKwon/Desktop/Practice/Kaggle/Titanic/final.csv", row.names = FALSE)
+
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Public Score - The public score is different by seed, but it's about 78%
 
 
