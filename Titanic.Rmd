@@ -36,7 +36,7 @@ dat <- rbind(train,test)
 
 Survived and Pclass
 --------------------
-```{r Survived and Pclass}
+```{r Survived.Pclass}
 #convert survived and pclass to factor variable
 dat$Survived <- as.factor(dat$Survived)
 dat$Pclass <- as.factor(dat$Pclass)
@@ -288,7 +288,7 @@ dat <- subset(dat, select = -c(Cabin, cabin.freq))
 
 Dealing with NA values in Embarked and Fare
 --------------------------------
-```{r NA value in Embarked / Fare}
+```{r NA.Embarked.Fare}
 #Gender -> male = 0, female = 1
 dat$Sex <- as.factor(ifelse(dat$Sex == "male", 0, 1))
 
@@ -423,7 +423,7 @@ dat <- subset(dat, select = -c(SibSp, Parch))
 From Name, name and surname.freq.surv
 Dealing with NA values in Age
 ---------------------------
-```{r name / surname.freq.surv / NA in Age}
+```{r name/surv.freq.surv/NA.Age}
 #converting names
 dat <- dat %>% 
   mutate(name = sub("\\..*$", "", sub("^.*, ", "", Name)), 
@@ -812,7 +812,7 @@ I will use Random Forest / Gradient Boosting Method / Support Vector Machine wit
 
 Random Forest
 -------------
-```{r Random Forest}
+```{r RandomForest}
 
 #typical mtry in classification = sqrt(# of predictors)
 rf.fit <- train(Survived~., data = training,

@@ -90,7 +90,7 @@ dat %>% filter(!is.na(Survived)) %>%
   ggtitle("Pclass vs Survived")
 ```
 
-![](Titanic_files/figure-html/Survived and Pclass-1.png)<!-- -->
+![](Titanic_files/figure-html/Survived.Pclass-1.png)<!-- -->
 
 ```r
 #Bar graph for Sex vs Survived
@@ -103,7 +103,7 @@ dat %>% filter(!is.na(Survived)) %>%
   ggtitle("Sex vs Survived")
 ```
 
-![](Titanic_files/figure-html/Survived and Pclass-2.png)<!-- -->
+![](Titanic_files/figure-html/Survived.Pclass-2.png)<!-- -->
 
 ```r
 dat %>% filter(!is.na(Survived)) %>%
@@ -116,7 +116,7 @@ dat %>% filter(!is.na(Survived)) %>%
   facet_grid(~Sex)
 ```
 
-![](Titanic_files/figure-html/Survived and Pclass-3.png)<!-- -->
+![](Titanic_files/figure-html/Survived.Pclass-3.png)<!-- -->
 
 ```r
 #In Pclass 1 and 2, obviously male mostly not survived and female survived
@@ -1214,7 +1214,7 @@ dat %>% filter(!is.na(Survived)) %>%
   ggtitle("Surname Frequency Survival Rate by Proportion")
 ```
 
-![](Titanic_files/figure-html/name / surname.freq.surv / NA in Age-1.png)<!-- -->
+![](Titanic_files/figure-html/name/surv.freq.surv/NA.Age-1.png)<!-- -->
 
 ```r
 dat %>% filter(!is.na(Survived)) %>% 
@@ -1224,7 +1224,7 @@ dat %>% filter(!is.na(Survived)) %>%
   ggtitle("Surname Frequency Survival by Count")
 ```
 
-![](Titanic_files/figure-html/name / surname.freq.surv / NA in Age-2.png)<!-- -->
+![](Titanic_files/figure-html/name/surv.freq.surv/NA.Age-2.png)<!-- -->
 
 ```r
 table(dat$surname.freq[1:891], dat$Survived[1:891])
@@ -1747,11 +1747,11 @@ rf.fit
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 802, 802, 802, 801, 802, 802, ... 
+## Summary of sample sizes: 801, 802, 802, 802, 802, 802, ... 
 ## Resampling results:
 ## 
 ##   Accuracy   Kappa    
-##   0.8204245  0.6105717
+##   0.8182147  0.6061062
 ## 
 ## Tuning parameter 'mtry' was held constant at a value of 4
 ```
@@ -1760,7 +1760,7 @@ rf.fit
 plot(rf.fit$finalModel)
 ```
 
-![](Titanic_files/figure-html/Random Forest-1.png)<!-- -->
+![](Titanic_files/figure-html/RandomForest-1.png)<!-- -->
 
 ```r
 varImp(rf.fit)
@@ -1771,22 +1771,22 @@ varImp(rf.fit)
 ## 
 ##                          Importance
 ## nameMr                      100.000
-## Pclass3                      64.086
-## Fare                         58.871
-## Sex1                         57.993
-## Age                          57.913
-## familyGrouplarge fam         43.198
-## Pclass2                      36.035
-## familyGroupsmall fam         29.790
-## nameMiss                     27.382
-## ticket.alone1                26.958
-## nameMrs                      25.956
-## ticket.let.survlow           22.373
-## EmbarkedS                    21.627
-## cabin.freq.survlow           20.888
-## deck.survlow                 20.218
-## Cabin.ox1                    16.597
-## EmbarkedQ                     9.479
+## Pclass3                      65.819
+## Sex1                         56.145
+## Age                          54.550
+## Fare                         52.708
+## familyGrouplarge fam         42.503
+## Pclass2                      33.220
+## familyGroupsmall fam         29.477
+## nameMiss                     25.744
+## EmbarkedS                    24.919
+## nameMrs                      23.395
+## ticket.alone1                22.385
+## ticket.let.survlow           21.840
+## Cabin.ox1                    18.313
+## cabin.freq.survlow           15.392
+## deck.survlow                 13.831
+## EmbarkedQ                     9.055
 ## surname.freq.survunknown      0.000
 ```
 
@@ -1799,24 +1799,24 @@ rf.fit.result
 
 ```
 ##                          MeanDecreaseAccuracy
-## Pclass2                           0.008887237
-## Pclass3                           0.033135641
-## Sex1                              0.054287866
-## Age                               0.020719468
-## Fare                              0.032253060
-## EmbarkedQ                         0.002811245
-## EmbarkedS                         0.005163752
-## Cabin.ox1                         0.007452046
-## deck.survlow                      0.007798017
-## cabin.freq.survlow                0.007837465
-## ticket.alone1                     0.007875149
-## ticket.let.survlow                0.006253909
-## nameMiss                          0.013639084
-## nameMr                            0.113103390
-## nameMrs                           0.012188809
-## surname.freq.survunknown          0.000961698
-## familyGrouplarge fam              0.014208643
-## familyGroupsmall fam              0.008988767
+## Pclass2                           0.008735345
+## Pclass3                           0.033942601
+## Sex1                              0.053683332
+## Age                               0.018709755
+## Fare                              0.029497413
+## EmbarkedQ                         0.003093384
+## EmbarkedS                         0.006005125
+## Cabin.ox1                         0.008247046
+## deck.survlow                      0.008401818
+## cabin.freq.survlow                0.008279720
+## ticket.alone1                     0.007745656
+## ticket.let.survlow                0.007503641
+## nameMiss                          0.013543460
+## nameMr                            0.111635049
+## nameMrs                           0.011228347
+## surname.freq.survunknown          0.001362105
+## familyGrouplarge fam              0.014006194
+## familyGroupsmall fam              0.008894702
 ```
 
 ```r
@@ -1827,7 +1827,7 @@ rf.fit.result %>% mutate(name = rownames(rf.fit.result)) %>%
   theme(axis.text.x = element_text(angle=90))
 ```
 
-![](Titanic_files/figure-html/Random Forest-2.png)<!-- -->
+![](Titanic_files/figure-html/RandomForest-2.png)<!-- -->
 
 ```r
 #remove Embarked / surname.freq.surv 
@@ -1855,16 +1855,16 @@ rf.acc
 
 ```
 ##    ntree    minacc       acc
-## 1    100 0.8003280 0.8338540
-## 2    200 0.7958317 0.8316695
-## 3    300 0.7974775 0.8315813
-## 4    400 0.7809089 0.8362527
-## 5    500 0.7998452 0.8293712
-## 6    600 0.7928510 0.8349938
-## 7    700 0.7950736 0.8340540
-## 8    800 0.7960928 0.8361386
-## 9    900 0.8071772 0.8406202
-## 10  1000 0.8103110 0.8418060
+## 1    100 0.8048836 0.8315308
+## 2    200 0.7846763 0.8327539
+## 3    300 0.7824530 0.8282147
+## 4    400 0.8034442 0.8338029
+## 5    500 0.7947775 0.8249018
+## 6    600 0.7985000 0.8305706
+## 7    700 0.7944369 0.8349390
+## 8    800 0.7916425 0.8350287
+## 9    900 0.8058997 0.8327420
+## 10  1000 0.8094512 0.8372991
 ```
 
 ```r
@@ -1873,7 +1873,7 @@ ggplot(rf.acc, aes(x=ntree, y=acc))+
   geom_point()
 ```
 
-![](Titanic_files/figure-html/Random Forest-3.png)<!-- -->
+![](Titanic_files/figure-html/RandomForest-3.png)<!-- -->
 
 ```r
 g.ntree <- rf.acc$ntree[which.max(rf.acc$minacc)]
@@ -1904,32 +1904,32 @@ rf.model
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 801, 803, 802, 802, 802, 802, ... 
+## Summary of sample sizes: 802, 802, 802, 802, 802, 801, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  Accuracy   Kappa    
-##    2    0.8305448  0.6364456
-##    4    0.8305320  0.6350314
-##    6    0.8294084  0.6320646
-##    8    0.8271232  0.6280983
-##   10    0.8215180  0.6175565
+##    2    0.8260300  0.6249893
+##    4    0.8226717  0.6175143
+##    6    0.8327965  0.6396695
+##    8    0.8260549  0.6275455
+##   10    0.8215605  0.6186076
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
-## The final value used for the model was mtry = 2.
+## The final value used for the model was mtry = 6.
 ```
 
 ```r
 plot(rf.model$finalModel)
 ```
 
-![](Titanic_files/figure-html/Random Forest-4.png)<!-- -->
+![](Titanic_files/figure-html/RandomForest-4.png)<!-- -->
 
 ```r
 max(rf.model$results$Accuracy)
 ```
 
 ```
-## [1] 0.8305448
+## [1] 0.8327965
 ```
 
 ```r
@@ -1942,21 +1942,21 @@ varImp(rf.model)
 ## rf variable importance
 ## 
 ##                      Importance
-## nameMr                  100.000
-## Sex1                     66.534
-## Pclass3                  40.321
-## Age                      37.101
-## Fare                     35.685
-## familyGrouplarge fam     34.491
-## nameMrs                  32.106
-## nameMiss                 29.801
-## Pclass2                   9.339
-## ticket.let.survlow        6.694
-## familyGroupsmall fam      5.113
-## Cabin.ox1                 4.453
-## cabin.freq.survlow        3.751
-## deck.survlow              3.347
-## ticket.alone1             0.000
+## nameMr                 100.0000
+## Pclass3                 67.8827
+## Age                     55.2001
+## Fare                    42.6946
+## familyGrouplarge fam    39.9601
+## Sex1                    37.0486
+## ticket.alone1           13.7757
+## familyGroupsmall fam    13.6936
+## Pclass2                 10.4241
+## ticket.let.survlow       6.0454
+## Cabin.ox1                5.7973
+## cabin.freq.survlow       4.2220
+## nameMrs                  2.8589
+## nameMiss                 0.7592
+## deck.survlow             0.0000
 ```
 
 ```r
@@ -1968,21 +1968,21 @@ rf.model.result
 
 ```
 ##                      MeanDecreaseAccuracy
-## Pclass2                       0.006055751
-## Pclass3                       0.021593210
-## Sex1                          0.060600975
-## Age                           0.013769000
-## Fare                          0.021648820
-## Cabin.ox1                     0.008522730
-## deck.survlow                  0.008031568
-## cabin.freq.survlow            0.008333621
-## ticket.alone1                 0.006609319
-## ticket.let.survlow            0.008255976
-## nameMiss                      0.022097875
-## nameMr                        0.095591057
-## nameMrs                       0.018801593
-## familyGrouplarge fam          0.012872282
-## familyGroupsmall fam          0.007647543
+## Pclass2                       0.005700146
+## Pclass3                       0.043026972
+## Sex1                          0.049213060
+## Age                           0.026045811
+## Fare                          0.032339964
+## Cabin.ox1                     0.007769334
+## deck.survlow                  0.005967169
+## cabin.freq.survlow            0.007141688
+## ticket.alone1                 0.008792798
+## ticket.let.survlow            0.004367854
+## nameMiss                      0.007576210
+## nameMr                        0.131288197
+## nameMrs                       0.008183933
+## familyGrouplarge fam          0.017305337
+## familyGroupsmall fam          0.008215164
 ```
 
 ```r
@@ -1993,7 +1993,7 @@ rf.model.result %>% mutate(name = rownames(rf.model.result)) %>%
   theme(axis.text.x = element_text(angle=90))
 ```
 
-![](Titanic_files/figure-html/Random Forest-5.png)<!-- -->
+![](Titanic_files/figure-html/RandomForest-5.png)<!-- -->
 
 ```r
 rf.minacc <- max(rf.model$results$Accuracy) - 
@@ -2002,7 +2002,7 @@ rf.minacc
 ```
 
 ```
-## [1] 0.7955301
+## [1] 0.7934905
 ```
 
 ```r
@@ -2019,26 +2019,26 @@ confusionMatrix(rf.pred, training$Survived)
 ## 
 ##           Reference
 ## Prediction   0   1
-##          0 497  89
-##          1  52 253
+##          0 533  43
+##          1  16 299
 ##                                           
-##                Accuracy : 0.8418          
-##                  95% CI : (0.8161, 0.8651)
+##                Accuracy : 0.9338          
+##                  95% CI : (0.9154, 0.9492)
 ##     No Information Rate : 0.6162          
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
-##                   Kappa : 0.6585          
+##                   Kappa : 0.8579          
 ##                                           
-##  Mcnemar's Test P-Value : 0.002431        
+##  Mcnemar's Test P-Value : 0.000712        
 ##                                           
-##             Sensitivity : 0.9053          
-##             Specificity : 0.7398          
-##          Pos Pred Value : 0.8481          
-##          Neg Pred Value : 0.8295          
+##             Sensitivity : 0.9709          
+##             Specificity : 0.8743          
+##          Pos Pred Value : 0.9253          
+##          Neg Pred Value : 0.9492          
 ##              Prevalence : 0.6162          
-##          Detection Rate : 0.5578          
-##    Detection Prevalence : 0.6577          
-##       Balanced Accuracy : 0.8225          
+##          Detection Rate : 0.5982          
+##    Detection Prevalence : 0.6465          
+##       Balanced Accuracy : 0.9226          
 ##                                           
 ##        'Positive' Class : 0               
 ## 
@@ -2052,7 +2052,7 @@ acc(rf.pred, training$Survived, training) - max(rf.model$results$Accuracy)
 ```
 
 ```
-## [1] 0.01120607
+## [1] 0.1009858
 ```
 
 ```r
@@ -2087,26 +2087,26 @@ boost.model
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 802, 802, 802, 802, 802, 802, ... 
+## Summary of sample sizes: 802, 802, 801, 802, 802, 801, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   interaction.depth  n.trees  Accuracy   Kappa    
-##   1                   50      0.8282647  0.6289492
-##   1                  100      0.8316729  0.6410442
-##   1                  150      0.8283021  0.6341348
-##   2                   50      0.8361423  0.6509926
-##   2                  100      0.8282772  0.6326443
-##   2                  150      0.8260175  0.6271648
-##   3                   50      0.8339076  0.6444841
-##   3                  100      0.8361423  0.6483177
-##   3                  150      0.8384020  0.6538485
+##   1                   50      0.8259891  0.6235662
+##   1                  100      0.8282485  0.6321382
+##   1                  150      0.8259888  0.6281076
+##   2                   50      0.8293466  0.6345200
+##   2                  100      0.8315688  0.6379403
+##   2                  150      0.8382729  0.6503928
+##   3                   50      0.8383484  0.6534620
+##   3                  100      0.8382729  0.6501923
+##   3                  150      0.8372123  0.6490834
 ## 
 ## Tuning parameter 'shrinkage' was held constant at a value of 0.1
 ## 
 ## Tuning parameter 'n.minobsinnode' was held constant at a value of 10
 ## Accuracy was used to select the optimal model using the largest value.
-## The final values used for the model were n.trees = 150,
-##  interaction.depth = 3, shrinkage = 0.1 and n.minobsinnode = 10.
+## The final values used for the model were n.trees = 50, interaction.depth
+##  = 3, shrinkage = 0.1 and n.minobsinnode = 10.
 ```
 
 ```r
@@ -2116,25 +2116,25 @@ summary(boost.model$finalModel)
 ![](Titanic_files/figure-html/GBM-1.png)<!-- -->
 
 ```
-##                                               var    rel.inf
-## nameMr                                     nameMr 38.5359159
-## Fare                                         Fare 17.5173306
-## Age                                           Age 13.2551688
-## Pclass3                                   Pclass3  8.5588968
-## familyGrouplarge fam         familyGrouplarge fam  7.3382367
-## ticket.let.survlow             ticket.let.survlow  4.4778556
-## EmbarkedS                               EmbarkedS  2.3953234
-## cabin.freq.survlow             cabin.freq.survlow  1.9821131
-## deck.survlow                         deck.survlow  1.2650862
-## Sex1                                         Sex1  0.7234757
-## nameMiss                                 nameMiss  0.6791945
-## surname.freq.survunknown surname.freq.survunknown  0.6495224
-## familyGroupsmall fam         familyGroupsmall fam  0.5645110
-## EmbarkedQ                               EmbarkedQ  0.5435207
-## ticket.alone1                       ticket.alone1  0.5220813
-## nameMrs                                   nameMrs  0.5180161
-## Cabin.ox1                               Cabin.ox1  0.3541208
-## Pclass2                                   Pclass2  0.1196304
+##                                               var     rel.inf
+## nameMr                                     nameMr 48.66974086
+## Pclass3                                   Pclass3 11.87173010
+## Fare                                         Fare  8.34832537
+## familyGrouplarge fam         familyGrouplarge fam  7.84566495
+## Age                                           Age  6.63154669
+## ticket.let.survlow             ticket.let.survlow  5.86448521
+## Sex1                                         Sex1  3.10693907
+## EmbarkedS                               EmbarkedS  2.01067618
+## cabin.freq.survlow             cabin.freq.survlow  1.94264508
+## deck.survlow                         deck.survlow  1.51866506
+## nameMrs                                   nameMrs  0.79233294
+## EmbarkedQ                               EmbarkedQ  0.45920280
+## nameMiss                                 nameMiss  0.20042337
+## Cabin.ox1                               Cabin.ox1  0.18950300
+## Pclass2                                   Pclass2  0.17541835
+## ticket.alone1                       ticket.alone1  0.17526163
+## familyGroupsmall fam         familyGroupsmall fam  0.10084079
+## surname.freq.survunknown surname.freq.survunknown  0.09659856
 ```
 
 ```r
@@ -2162,8 +2162,8 @@ boost.model$bestTune
 ```
 
 ```
-##    n.trees interaction.depth shrinkage n.minobsinnode
-## 64    3550                 2      0.01             10
+##     n.trees interaction.depth shrinkage n.minobsinnode
+## 111    4600                 3      0.01             10
 ```
 
 ```r
@@ -2171,7 +2171,7 @@ max(boost.model$results$Accuracy)
 ```
 
 ```
-## [1] 0.8461883
+## [1] 0.8407709
 ```
 
 ```r
@@ -2183,7 +2183,7 @@ boost.minacc
 ```
 
 ```
-## [1] 0.8116343
+## [1] 0.7897937
 ```
 
 ```r
@@ -2202,21 +2202,21 @@ summary(boost.model$finalModel)
 
 ```
 ##                                       var    rel.inf
-## nameMr                             nameMr 30.9045344
-## Fare                                 Fare 21.0229592
-## Age                                   Age 17.5680886
-## Pclass3                           Pclass3  7.4622913
-## familyGrouplarge fam familyGrouplarge fam  6.6304117
-## ticket.let.survlow     ticket.let.survlow  4.4685816
-## Sex1                                 Sex1  3.8340426
-## deck.survlow                 deck.survlow  1.7288903
-## cabin.freq.survlow     cabin.freq.survlow  1.2094854
-## Cabin.ox1                       Cabin.ox1  1.1627554
-## nameMrs                           nameMrs  1.0868520
-## nameMiss                         nameMiss  0.9204300
-## familyGroupsmall fam familyGroupsmall fam  0.8574066
-## ticket.alone1               ticket.alone1  0.7744813
-## Pclass2                           Pclass2  0.3687898
+## Fare                                 Fare 27.9467976
+## nameMr                             nameMr 24.9521040
+## Age                                   Age 21.5863083
+## Pclass3                           Pclass3  6.8064253
+## familyGrouplarge fam familyGrouplarge fam  4.2352035
+## ticket.let.survlow     ticket.let.survlow  3.4143478
+## Sex1                                 Sex1  2.7422828
+## deck.survlow                 deck.survlow  1.5252176
+## familyGroupsmall fam familyGroupsmall fam  1.3044984
+## cabin.freq.survlow     cabin.freq.survlow  1.2817356
+## nameMrs                           nameMrs  1.2424808
+## ticket.alone1               ticket.alone1  0.9325713
+## nameMiss                         nameMiss  0.9148256
+## Cabin.ox1                       Cabin.ox1  0.5777445
+## Pclass2                           Pclass2  0.5374571
 ```
 
 ```r
@@ -2224,7 +2224,7 @@ boost.model$finalModel$tuneValue$n.trees
 ```
 
 ```
-## [1] 3550
+## [1] 4600
 ```
 
 ```r
@@ -2241,28 +2241,28 @@ confusionMatrix(boost.pred, training$Survived)
 ## 
 ##           Reference
 ## Prediction   0   1
-##          0 513  67
-##          1  36 275
-##                                           
-##                Accuracy : 0.8844          
-##                  95% CI : (0.8616, 0.9047)
-##     No Information Rate : 0.6162          
-##     P-Value [Acc > NIR] : < 2.2e-16       
-##                                           
-##                   Kappa : 0.7514          
-##                                           
-##  Mcnemar's Test P-Value : 0.003117        
-##                                           
-##             Sensitivity : 0.9344          
-##             Specificity : 0.8041          
-##          Pos Pred Value : 0.8845          
-##          Neg Pred Value : 0.8842          
-##              Prevalence : 0.6162          
-##          Detection Rate : 0.5758          
-##    Detection Prevalence : 0.6510          
-##       Balanced Accuracy : 0.8693          
-##                                           
-##        'Positive' Class : 0               
+##          0 514  52
+##          1  35 290
+##                                          
+##                Accuracy : 0.9024         
+##                  95% CI : (0.881, 0.9211)
+##     No Information Rate : 0.6162         
+##     P-Value [Acc > NIR] : < 2e-16        
+##                                          
+##                   Kappa : 0.7916         
+##                                          
+##  Mcnemar's Test P-Value : 0.08628        
+##                                          
+##             Sensitivity : 0.9362         
+##             Specificity : 0.8480         
+##          Pos Pred Value : 0.9081         
+##          Neg Pred Value : 0.8923         
+##              Prevalence : 0.6162         
+##          Detection Rate : 0.5769         
+##    Detection Prevalence : 0.6352         
+##       Balanced Accuracy : 0.8921         
+##                                          
+##        'Positive' Class : 0              
 ## 
 ```
 
@@ -2273,7 +2273,7 @@ acc(boost.pred, training$Survived, training) - max(boost.model$results$Accuracy)
 ```
 
 ```
-## [1] 0.03821126
+## [1] 0.06158599
 ```
 
 ```r
@@ -2300,24 +2300,24 @@ svm.radial
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 802, 801, 802, 801, 802, 802, ... 
+## Summary of sample sizes: 802, 802, 801, 802, 802, 802, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   C       Accuracy   Kappa    
-##     0.25  0.8306086  0.6359333
-##     0.50  0.8328433  0.6376260
-##     1.00  0.8351158  0.6409794
-##     2.00  0.8317572  0.6340395
-##     4.00  0.8261392  0.6240033
-##     8.00  0.8216065  0.6148842
-##    16.00  0.8170744  0.6063283
-##    32.00  0.8137036  0.6006978
-##    64.00  0.8047651  0.5806494
-##   128.00  0.8036667  0.5791926
+##     0.25  0.8305451  0.6359428
+##     0.50  0.8294090  0.6304428
+##     1.00  0.8283106  0.6269688
+##     2.00  0.8260762  0.6238438
+##     4.00  0.8193219  0.6115108
+##     8.00  0.8137286  0.5988624
+##    16.00  0.8058631  0.5834301
+##    32.00  0.8014062  0.5733136
+##    64.00  0.8002826  0.5731716
+##   128.00  0.8002823  0.5728402
 ## 
-## Tuning parameter 'sigma' was held constant at a value of 0.05652865
+## Tuning parameter 'sigma' was held constant at a value of 0.06198798
 ## Accuracy was used to select the optimal model using the largest value.
-## The final values used for the model were sigma = 0.05652865 and C = 1.
+## The final values used for the model were sigma = 0.06198798 and C = 0.25.
 ```
 
 ```r
@@ -2325,7 +2325,7 @@ max(svm.radial$results$Accuracy)
 ```
 
 ```
-## [1] 0.8351158
+## [1] 0.8305451
 ```
 
 ```r
@@ -2369,7 +2369,7 @@ svm.radial$bestTune
 
 ```
 ##    sigma    C
-## 26  0.03 1.76
+## 42  0.05 1.26
 ```
 
 ```r
@@ -2377,7 +2377,7 @@ max(svm.radial$results$Accuracy)
 ```
 
 ```
-## [1] 0.8114817
+## [1] 0.8126172
 ```
 
 ```r
@@ -2394,28 +2394,28 @@ confusionMatrix(svm.radial.pred, training$Survived)
 ## 
 ##           Reference
 ## Prediction   0   1
-##          0 492 110
-##          1  57 232
-##                                           
-##                Accuracy : 0.8126          
-##                  95% CI : (0.7854, 0.8377)
-##     No Information Rate : 0.6162          
-##     P-Value [Acc > NIR] : < 2.2e-16       
-##                                           
-##                   Kappa : 0.5918          
-##                                           
-##  Mcnemar's Test P-Value : 5.725e-05       
-##                                           
-##             Sensitivity : 0.8962          
-##             Specificity : 0.6784          
-##          Pos Pred Value : 0.8173          
-##          Neg Pred Value : 0.8028          
-##              Prevalence : 0.6162          
-##          Detection Rate : 0.5522          
-##    Detection Prevalence : 0.6756          
-##       Balanced Accuracy : 0.7873          
-##                                           
-##        'Positive' Class : 0               
+##          0 494 107
+##          1  55 235
+##                                          
+##                Accuracy : 0.8182         
+##                  95% CI : (0.7913, 0.843)
+##     No Information Rate : 0.6162         
+##     P-Value [Acc > NIR] : < 2.2e-16      
+##                                          
+##                   Kappa : 0.6043         
+##                                          
+##  Mcnemar's Test P-Value : 6.151e-05      
+##                                          
+##             Sensitivity : 0.8998         
+##             Specificity : 0.6871         
+##          Pos Pred Value : 0.8220         
+##          Neg Pred Value : 0.8103         
+##              Prevalence : 0.6162         
+##          Detection Rate : 0.5544         
+##    Detection Prevalence : 0.6745         
+##       Balanced Accuracy : 0.7935         
+##                                          
+##        'Positive' Class : 0              
 ## 
 ```
 
@@ -2426,7 +2426,7 @@ acc(svm.radial.pred, training$Survived, training) - max(svm.radial$results$Accur
 ```
 
 ```
-## [1] 0.001088475
+## [1] 0.005564635
 ```
 
 ```r
@@ -2465,8 +2465,8 @@ summary(ensembled.test)
 
 ```
 ##  PassengerId        rf      boost   svm     mean   
-##  Length:418         0:258   0:258   0:271   0:258  
-##  Class :character   1:160   1:160   1:147   1:160  
+##  Length:418         0:266   0:258   0:273   0:264  
+##  Class :character   1:152   1:160   1:145   1:154  
 ##  Mode  :character
 ```
 
@@ -2481,18 +2481,18 @@ final.pred
 ```
 
 ```
-##   [1] 0 1 0 0 1 0 1 0 1 0 0 0 1 0 1 1 0 0 1 1 0 0 1 0 1 0 1 0 0 0 0 0 1 1 0
-##  [36] 0 1 1 0 0 0 0 0 1 1 0 0 0 1 1 0 0 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 0 0 1
-##  [71] 1 0 1 0 1 0 0 1 0 1 1 0 0 0 0 0 1 1 1 1 1 0 1 0 0 0 1 0 1 0 1 0 0 0 1
-## [106] 0 0 0 0 0 0 1 1 1 1 0 0 1 0 1 1 0 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 1 0
-## [141] 0 1 0 0 0 0 0 0 0 0 1 0 0 1 0 0 1 1 0 1 1 1 1 0 0 1 0 0 1 1 0 0 0 0 0
+##   [1] 0 0 0 0 1 0 0 0 1 0 0 0 1 0 1 1 0 0 0 1 0 1 1 0 1 0 1 0 0 0 0 0 1 1 1
+##  [36] 0 1 0 0 1 0 1 0 1 1 0 0 0 1 1 1 0 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 0 0 1
+##  [71] 1 0 1 0 1 0 0 1 0 1 1 0 0 0 0 0 1 0 1 1 1 0 1 0 0 0 1 0 1 0 1 0 0 0 1
+## [106] 0 0 0 0 0 0 1 1 1 1 0 0 1 1 1 1 0 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0
+## [141] 0 1 0 0 0 0 0 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 1 0 0 1 0 0 1 0 0 0 0 0 0
 ## [176] 1 1 0 1 1 0 0 1 0 1 0 1 0 0 0 0 0 1 0 1 0 1 1 0 1 1 1 0 1 0 0 1 0 1 0
 ## [211] 0 0 0 1 0 0 1 0 1 0 1 0 1 0 1 1 0 1 0 0 0 1 0 0 0 0 0 0 1 1 1 1 0 0 1
-## [246] 0 1 0 1 1 1 0 0 0 0 0 0 0 1 0 0 0 1 1 0 0 0 0 1 0 0 0 1 1 0 1 0 0 0 0
-## [281] 1 1 1 1 1 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 1 0 1 0 1 0 0 0 1 1
-## [316] 1 0 0 0 0 0 0 0 0 1 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 1 0 1
-## [351] 1 0 0 0 1 0 1 0 0 1 0 1 1 0 1 0 0 1 1 0 0 1 0 0 1 1 0 0 0 0 0 0 1 1 0
-## [386] 1 0 0 0 0 0 1 1 0 0 1 0 1 0 0 1 0 1 0 0 0 0 0 1 1 1 1 1 0 1 0 0 1
+## [246] 0 1 0 1 0 1 0 0 0 0 0 0 0 1 0 0 0 1 1 0 0 0 0 1 0 0 0 1 1 0 1 0 0 0 0
+## [281] 0 1 1 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 1 0 1 0 0 0 0 0 0 1
+## [316] 1 0 0 0 0 0 0 0 1 1 0 1 0 0 0 1 0 0 1 0 0 0 0 0 1 0 0 0 1 1 1 0 1 0 1
+## [351] 1 0 0 0 1 0 1 0 0 1 0 1 1 0 1 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 1 1 0
+## [386] 1 0 0 0 0 0 1 1 0 0 1 0 1 0 0 1 0 1 0 0 0 0 0 1 1 1 1 0 0 1 0 0 1
 ## Levels: 0 1
 ```
 
@@ -2505,7 +2505,7 @@ head(final)
 ```
 ##   PassengerId Survived
 ## 1         892        0
-## 2         893        1
+## 2         893        0
 ## 3         894        0
 ## 4         895        0
 ## 5         896        1
