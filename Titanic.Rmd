@@ -2,8 +2,10 @@
 title: "Titanic Survivor Prediction"
 author: "David (Yongbock) Kwon"
 output:
-  pdf_document: default
+  html_document:
+    keep_md: true
   html_notebook: default
+  pdf_document: default
 editor_options:
   chunk_output_type: console
 ---
