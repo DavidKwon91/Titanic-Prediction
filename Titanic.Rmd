@@ -999,7 +999,7 @@ svm.radial <- model("svmRadial", training %>% subset(select = -c(name, Age)),
                     control, 
                     grid = svm.grid)
 
-svm.radial
+svm.radial$bestTune
 max(svm.radial$results$Accuracy)
 #0.8160
 
