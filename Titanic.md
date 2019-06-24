@@ -1747,11 +1747,11 @@ rf.fit
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 802, 802, 803, 802, 801, 801, ... 
+## Summary of sample sizes: 802, 802, 802, 801, 802, 802, ... 
 ## Resampling results:
 ## 
 ##   Accuracy   Kappa    
-##   0.8182474  0.6075437
+##   0.8204245  0.6105717
 ## 
 ## Tuning parameter 'mtry' was held constant at a value of 4
 ```
@@ -1771,22 +1771,22 @@ varImp(rf.fit)
 ## 
 ##                          Importance
 ## nameMr                      100.000
-## Pclass3                      66.163
-## Sex1                         64.517
-## Fare                         61.645
-## Age                          60.947
-## familyGrouplarge fam         50.708
-## familyGroupsmall fam         37.715
-## Pclass2                      34.909
-## nameMrs                      31.568
-## nameMiss                     31.041
-## EmbarkedS                    27.911
-## ticket.alone1                27.467
-## ticket.let.survlow           27.388
-## cabin.freq.survlow           24.648
-## deck.survlow                 22.626
-## Cabin.ox1                    20.367
-## EmbarkedQ                     9.629
+## Pclass3                      64.086
+## Fare                         58.871
+## Sex1                         57.993
+## Age                          57.913
+## familyGrouplarge fam         43.198
+## Pclass2                      36.035
+## familyGroupsmall fam         29.790
+## nameMiss                     27.382
+## ticket.alone1                26.958
+## nameMrs                      25.956
+## ticket.let.survlow           22.373
+## EmbarkedS                    21.627
+## cabin.freq.survlow           20.888
+## deck.survlow                 20.218
+## Cabin.ox1                    16.597
+## EmbarkedQ                     9.479
 ## surname.freq.survunknown      0.000
 ```
 
@@ -1799,24 +1799,24 @@ rf.fit.result
 
 ```
 ##                          MeanDecreaseAccuracy
-## Pclass2                          0.0085827396
-## Pclass3                          0.0335891685
-## Sex1                             0.0563148190
-## Age                              0.0207257881
-## Fare                             0.0325058534
-## EmbarkedQ                        0.0025949871
-## EmbarkedS                        0.0059801942
-## Cabin.ox1                        0.0070780460
-## deck.survlow                     0.0084061091
-## cabin.freq.survlow               0.0083890433
-## ticket.alone1                    0.0086186914
-## ticket.let.survlow               0.0069567839
-## nameMiss                         0.0133131042
-## nameMr                           0.1078443171
-## nameMrs                          0.0134119894
-## surname.freq.survunknown         0.0009762423
-## familyGrouplarge fam             0.0145835764
-## familyGroupsmall fam             0.0105625502
+## Pclass2                           0.008887237
+## Pclass3                           0.033135641
+## Sex1                              0.054287866
+## Age                               0.020719468
+## Fare                              0.032253060
+## EmbarkedQ                         0.002811245
+## EmbarkedS                         0.005163752
+## Cabin.ox1                         0.007452046
+## deck.survlow                      0.007798017
+## cabin.freq.survlow                0.007837465
+## ticket.alone1                     0.007875149
+## ticket.let.survlow                0.006253909
+## nameMiss                          0.013639084
+## nameMr                            0.113103390
+## nameMrs                           0.012188809
+## surname.freq.survunknown          0.000961698
+## familyGrouplarge fam              0.014208643
+## familyGroupsmall fam              0.008988767
 ```
 
 ```r
@@ -1855,16 +1855,16 @@ rf.acc
 
 ```
 ##    ntree    minacc       acc
-## 1    100 0.7789998 0.8316809
-## 2    200 0.8030001 0.8317075
-## 3    300 0.7891940 0.8317305
-## 4    400 0.7899621 0.8328178
-## 5    500 0.7832890 0.8381980
-## 6    600 0.8026394 0.8372863
-## 7    700 0.8046779 0.8394206
-## 8    800 0.7905028 0.8350153
-## 9    900 0.8027371 0.8338285
-## 10  1000 0.7797470 0.8325911
+## 1    100 0.8003280 0.8338540
+## 2    200 0.7958317 0.8316695
+## 3    300 0.7974775 0.8315813
+## 4    400 0.7809089 0.8362527
+## 5    500 0.7998452 0.8293712
+## 6    600 0.7928510 0.8349938
+## 7    700 0.7950736 0.8340540
+## 8    800 0.7960928 0.8361386
+## 9    900 0.8071772 0.8406202
+## 10  1000 0.8103110 0.8418060
 ```
 
 ```r
@@ -1881,7 +1881,7 @@ g.ntree
 ```
 
 ```
-## [1] 700
+## [1] 1000
 ```
 
 ```r
@@ -1904,18 +1904,18 @@ rf.model
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 802, 802, 801, 802, 802, 802, ... 
+## Summary of sample sizes: 801, 803, 802, 802, 802, 802, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  Accuracy   Kappa    
-##    2    0.8350133  0.6446094
-##    4    0.8350638  0.6455874
-##    6    0.8328169  0.6403525
-##    8    0.8317189  0.6394667
-##   10    0.8272245  0.6303538
+##    2    0.8305448  0.6364456
+##    4    0.8305320  0.6350314
+##    6    0.8294084  0.6320646
+##    8    0.8271232  0.6280983
+##   10    0.8215180  0.6175565
 ## 
 ## Accuracy was used to select the optimal model using the largest value.
-## The final value used for the model was mtry = 4.
+## The final value used for the model was mtry = 2.
 ```
 
 ```r
@@ -1929,7 +1929,7 @@ max(rf.model$results$Accuracy)
 ```
 
 ```
-## [1] 0.8350638
+## [1] 0.8305448
 ```
 
 ```r
@@ -1943,20 +1943,20 @@ varImp(rf.model)
 ## 
 ##                      Importance
 ## nameMr                  100.000
-## Pclass3                  53.147
-## familyGrouplarge fam     42.684
-## Fare                     42.391
-## Age                      41.950
-## Sex1                     38.592
-## Pclass2                  14.062
-## familyGroupsmall fam     11.242
-## ticket.let.survlow        7.523
-## nameMrs                   6.741
-## ticket.alone1             5.970
-## nameMiss                  5.817
-## Cabin.ox1                 3.582
-## deck.survlow              1.700
-## cabin.freq.survlow        0.000
+## Sex1                     66.534
+## Pclass3                  40.321
+## Age                      37.101
+## Fare                     35.685
+## familyGrouplarge fam     34.491
+## nameMrs                  32.106
+## nameMiss                 29.801
+## Pclass2                   9.339
+## ticket.let.survlow        6.694
+## familyGroupsmall fam      5.113
+## Cabin.ox1                 4.453
+## cabin.freq.survlow        3.751
+## deck.survlow              3.347
+## ticket.alone1             0.000
 ```
 
 ```r
@@ -1968,21 +1968,21 @@ rf.model.result
 
 ```
 ##                      MeanDecreaseAccuracy
-## Pclass2                       0.007468228
-## Pclass3                       0.035112336
-## Sex1                          0.053636568
-## Age                           0.020506518
-## Fare                          0.032401358
-## Cabin.ox1                     0.007646188
-## deck.survlow                  0.007654550
-## cabin.freq.survlow            0.007169034
-## ticket.alone1                 0.007392427
-## ticket.let.survlow            0.006702971
-## nameMiss                      0.013055155
-## nameMr                        0.128091439
-## nameMrs                       0.011833768
-## familyGrouplarge fam          0.017699086
-## familyGroupsmall fam          0.008224047
+## Pclass2                       0.006055751
+## Pclass3                       0.021593210
+## Sex1                          0.060600975
+## Age                           0.013769000
+## Fare                          0.021648820
+## Cabin.ox1                     0.008522730
+## deck.survlow                  0.008031568
+## cabin.freq.survlow            0.008333621
+## ticket.alone1                 0.006609319
+## ticket.let.survlow            0.008255976
+## nameMiss                      0.022097875
+## nameMr                        0.095591057
+## nameMrs                       0.018801593
+## familyGrouplarge fam          0.012872282
+## familyGroupsmall fam          0.007647543
 ```
 
 ```r
@@ -2002,7 +2002,7 @@ rf.minacc
 ```
 
 ```
-## [1] 0.8054741
+## [1] 0.7955301
 ```
 
 ```r
@@ -2019,26 +2019,26 @@ confusionMatrix(rf.pred, training$Survived)
 ## 
 ##           Reference
 ## Prediction   0   1
-##          0 517  60
-##          1  32 282
+##          0 497  89
+##          1  52 253
 ##                                           
-##                Accuracy : 0.8967          
-##                  95% CI : (0.8749, 0.9159)
+##                Accuracy : 0.8418          
+##                  95% CI : (0.8161, 0.8651)
 ##     No Information Rate : 0.6162          
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
-##                   Kappa : 0.7783          
+##                   Kappa : 0.6585          
 ##                                           
-##  Mcnemar's Test P-Value : 0.004879        
+##  Mcnemar's Test P-Value : 0.002431        
 ##                                           
-##             Sensitivity : 0.9417          
-##             Specificity : 0.8246          
-##          Pos Pred Value : 0.8960          
-##          Neg Pred Value : 0.8981          
+##             Sensitivity : 0.9053          
+##             Specificity : 0.7398          
+##          Pos Pred Value : 0.8481          
+##          Neg Pred Value : 0.8295          
 ##              Prevalence : 0.6162          
-##          Detection Rate : 0.5802          
-##    Detection Prevalence : 0.6476          
-##       Balanced Accuracy : 0.8831          
+##          Detection Rate : 0.5578          
+##    Detection Prevalence : 0.6577          
+##       Balanced Accuracy : 0.8225          
 ##                                           
 ##        'Positive' Class : 0               
 ## 
@@ -2052,7 +2052,7 @@ acc(rf.pred, training$Survived, training) - max(rf.model$results$Accuracy)
 ```
 
 ```
-## [1] 0.06168139
+## [1] 0.01120607
 ```
 
 ```r
@@ -2087,19 +2087,19 @@ boost.model
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 802, 802, 801, 802, 803, 801, ... 
+## Summary of sample sizes: 802, 802, 802, 802, 802, 802, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   interaction.depth  n.trees  Accuracy   Kappa    
-##   1                   50      0.8271612  0.6258544
-##   1                  100      0.8316181  0.6408772
-##   1                  150      0.8293962  0.6367130
-##   2                   50      0.8260254  0.6273526
-##   2                  100      0.8305323  0.6372972
-##   2                  150      0.8339158  0.6429117
-##   3                   50      0.8237779  0.6198172
-##   3                  100      0.8350519  0.6464192
-##   3                  150      0.8417436  0.6603437
+##   1                   50      0.8282647  0.6289492
+##   1                  100      0.8316729  0.6410442
+##   1                  150      0.8283021  0.6341348
+##   2                   50      0.8361423  0.6509926
+##   2                  100      0.8282772  0.6326443
+##   2                  150      0.8260175  0.6271648
+##   3                   50      0.8339076  0.6444841
+##   3                  100      0.8361423  0.6483177
+##   3                  150      0.8384020  0.6538485
 ## 
 ## Tuning parameter 'shrinkage' was held constant at a value of 0.1
 ## 
@@ -2117,24 +2117,24 @@ summary(boost.model$finalModel)
 
 ```
 ##                                               var    rel.inf
-## nameMr                                     nameMr 33.2287663
-## Fare                                         Fare 17.2272165
-## Age                                           Age 13.2360294
-## Pclass3                                   Pclass3 10.0997809
-## Sex1                                         Sex1  7.5496851
-## familyGrouplarge fam         familyGrouplarge fam  5.2496587
-## ticket.let.survlow             ticket.let.survlow  4.4213782
-## cabin.freq.survlow             cabin.freq.survlow  2.3017294
-## deck.survlow                         deck.survlow  1.4557399
-## EmbarkedS                               EmbarkedS  1.3415635
-## nameMrs                                   nameMrs  0.7696190
-## surname.freq.survunknown surname.freq.survunknown  0.7655215
-## familyGroupsmall fam         familyGroupsmall fam  0.5986570
-## ticket.alone1                       ticket.alone1  0.4600072
-## nameMiss                                 nameMiss  0.4262335
-## EmbarkedQ                               EmbarkedQ  0.3850393
-## Cabin.ox1                               Cabin.ox1  0.3786218
-## Pclass2                                   Pclass2  0.1047528
+## nameMr                                     nameMr 38.5359159
+## Fare                                         Fare 17.5173306
+## Age                                           Age 13.2551688
+## Pclass3                                   Pclass3  8.5588968
+## familyGrouplarge fam         familyGrouplarge fam  7.3382367
+## ticket.let.survlow             ticket.let.survlow  4.4778556
+## EmbarkedS                               EmbarkedS  2.3953234
+## cabin.freq.survlow             cabin.freq.survlow  1.9821131
+## deck.survlow                         deck.survlow  1.2650862
+## Sex1                                         Sex1  0.7234757
+## nameMiss                                 nameMiss  0.6791945
+## surname.freq.survunknown surname.freq.survunknown  0.6495224
+## familyGroupsmall fam         familyGroupsmall fam  0.5645110
+## EmbarkedQ                               EmbarkedQ  0.5435207
+## ticket.alone1                       ticket.alone1  0.5220813
+## nameMrs                                   nameMrs  0.5180161
+## Cabin.ox1                               Cabin.ox1  0.3541208
+## Pclass2                                   Pclass2  0.1196304
 ```
 
 ```r
@@ -2162,8 +2162,8 @@ boost.model$bestTune
 ```
 
 ```
-##     n.trees interaction.depth shrinkage n.minobsinnode
-## 127    1000                 4      0.01             10
+##    n.trees interaction.depth shrinkage n.minobsinnode
+## 64    3550                 2      0.01             10
 ```
 
 ```r
@@ -2171,7 +2171,7 @@ max(boost.model$results$Accuracy)
 ```
 
 ```
-## [1] 0.8450562
+## [1] 0.8461883
 ```
 
 ```r
@@ -2183,7 +2183,7 @@ boost.minacc
 ```
 
 ```
-## [1] 0.8094128
+## [1] 0.8116343
 ```
 
 ```r
@@ -2202,21 +2202,21 @@ summary(boost.model$finalModel)
 
 ```
 ##                                       var    rel.inf
-## nameMr                             nameMr 38.7420073
-## Fare                                 Fare 18.0417347
-## Age                                   Age 13.8857902
-## Pclass3                           Pclass3 10.4105019
-## familyGrouplarge fam familyGrouplarge fam  5.3350612
-## ticket.let.survlow     ticket.let.survlow  4.4841955
-## Sex1                                 Sex1  2.1534019
-## cabin.freq.survlow     cabin.freq.survlow  2.1121157
-## deck.survlow                 deck.survlow  1.3815172
-## nameMrs                           nameMrs  0.9007157
-## familyGroupsmall fam familyGroupsmall fam  0.8870651
-## Cabin.ox1                       Cabin.ox1  0.5593556
-## nameMiss                         nameMiss  0.5046801
-## ticket.alone1               ticket.alone1  0.4805465
-## Pclass2                           Pclass2  0.1213116
+## nameMr                             nameMr 30.9045344
+## Fare                                 Fare 21.0229592
+## Age                                   Age 17.5680886
+## Pclass3                           Pclass3  7.4622913
+## familyGrouplarge fam familyGrouplarge fam  6.6304117
+## ticket.let.survlow     ticket.let.survlow  4.4685816
+## Sex1                                 Sex1  3.8340426
+## deck.survlow                 deck.survlow  1.7288903
+## cabin.freq.survlow     cabin.freq.survlow  1.2094854
+## Cabin.ox1                       Cabin.ox1  1.1627554
+## nameMrs                           nameMrs  1.0868520
+## nameMiss                         nameMiss  0.9204300
+## familyGroupsmall fam familyGroupsmall fam  0.8574066
+## ticket.alone1               ticket.alone1  0.7744813
+## Pclass2                           Pclass2  0.3687898
 ```
 
 ```r
@@ -2224,7 +2224,7 @@ boost.model$finalModel$tuneValue$n.trees
 ```
 
 ```
-## [1] 1000
+## [1] 3550
 ```
 
 ```r
@@ -2241,26 +2241,26 @@ confusionMatrix(boost.pred, training$Survived)
 ## 
 ##           Reference
 ## Prediction   0   1
-##          0 511  67
-##          1  38 275
+##          0 513  67
+##          1  36 275
 ##                                           
-##                Accuracy : 0.8822          
-##                  95% CI : (0.8591, 0.9026)
+##                Accuracy : 0.8844          
+##                  95% CI : (0.8616, 0.9047)
 ##     No Information Rate : 0.6162          
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
-##                   Kappa : 0.7468          
+##                   Kappa : 0.7514          
 ##                                           
-##  Mcnemar's Test P-Value : 0.006285        
+##  Mcnemar's Test P-Value : 0.003117        
 ##                                           
-##             Sensitivity : 0.9308          
+##             Sensitivity : 0.9344          
 ##             Specificity : 0.8041          
-##          Pos Pred Value : 0.8841          
-##          Neg Pred Value : 0.8786          
+##          Pos Pred Value : 0.8845          
+##          Neg Pred Value : 0.8842          
 ##              Prevalence : 0.6162          
-##          Detection Rate : 0.5735          
-##    Detection Prevalence : 0.6487          
-##       Balanced Accuracy : 0.8674          
+##          Detection Rate : 0.5758          
+##    Detection Prevalence : 0.6510          
+##       Balanced Accuracy : 0.8693          
 ##                                           
 ##        'Positive' Class : 0               
 ## 
@@ -2273,7 +2273,7 @@ acc(boost.pred, training$Survived, training) - max(boost.model$results$Accuracy)
 ```
 
 ```
-## [1] 0.0370987
+## [1] 0.03821126
 ```
 
 ```r
@@ -2300,24 +2300,24 @@ svm.radial
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 801, 802, 802, 802, 803, 801, ... 
+## Summary of sample sizes: 802, 801, 802, 801, 802, 802, ... 
 ## Resampling results across tuning parameters:
 ## 
 ##   C       Accuracy   Kappa    
-##     0.25  0.8327673  0.6402420
-##     0.50  0.8271493  0.6251978
-##     1.00  0.8304824  0.6308762
-##     2.00  0.8260129  0.6216020
-##     4.00  0.8103198  0.5913297
-##     8.00  0.8125417  0.5962433
-##    16.00  0.8024668  0.5746465
-##    32.00  0.7979977  0.5655580
-##    64.00  0.7946394  0.5586370
-##   128.00  0.8013687  0.5730793
+##     0.25  0.8306086  0.6359333
+##     0.50  0.8328433  0.6376260
+##     1.00  0.8351158  0.6409794
+##     2.00  0.8317572  0.6340395
+##     4.00  0.8261392  0.6240033
+##     8.00  0.8216065  0.6148842
+##    16.00  0.8170744  0.6063283
+##    32.00  0.8137036  0.6006978
+##    64.00  0.8047651  0.5806494
+##   128.00  0.8036667  0.5791926
 ## 
-## Tuning parameter 'sigma' was held constant at a value of 0.05626913
+## Tuning parameter 'sigma' was held constant at a value of 0.05652865
 ## Accuracy was used to select the optimal model using the largest value.
-## The final values used for the model were sigma = 0.05626913 and C = 0.25.
+## The final values used for the model were sigma = 0.05652865 and C = 1.
 ```
 
 ```r
@@ -2325,7 +2325,7 @@ max(svm.radial$results$Accuracy)
 ```
 
 ```
-## [1] 0.8327673
+## [1] 0.8351158
 ```
 
 ```r
@@ -2368,8 +2368,8 @@ svm.radial$bestTune
 ```
 
 ```
-##   sigma    C
-## 5  0.01 1.01
+##    sigma    C
+## 26  0.03 1.76
 ```
 
 ```r
@@ -2377,7 +2377,7 @@ max(svm.radial$results$Accuracy)
 ```
 
 ```
-## [1] 0.8103967
+## [1] 0.8114817
 ```
 
 ```r
@@ -2394,28 +2394,28 @@ confusionMatrix(svm.radial.pred, training$Survived)
 ## 
 ##           Reference
 ## Prediction   0   1
-##          0 492 112
-##          1  57 230
-##                                          
-##                Accuracy : 0.8103         
-##                  95% CI : (0.783, 0.8356)
-##     No Information Rate : 0.6162         
-##     P-Value [Acc > NIR] : < 2.2e-16      
-##                                          
-##                   Kappa : 0.5865         
-##                                          
-##  Mcnemar's Test P-Value : 3.269e-05      
-##                                          
-##             Sensitivity : 0.8962         
-##             Specificity : 0.6725         
-##          Pos Pred Value : 0.8146         
-##          Neg Pred Value : 0.8014         
-##              Prevalence : 0.6162         
-##          Detection Rate : 0.5522         
-##    Detection Prevalence : 0.6779         
-##       Balanced Accuracy : 0.7843         
-##                                          
-##        'Positive' Class : 0              
+##          0 492 110
+##          1  57 232
+##                                           
+##                Accuracy : 0.8126          
+##                  95% CI : (0.7854, 0.8377)
+##     No Information Rate : 0.6162          
+##     P-Value [Acc > NIR] : < 2.2e-16       
+##                                           
+##                   Kappa : 0.5918          
+##                                           
+##  Mcnemar's Test P-Value : 5.725e-05       
+##                                           
+##             Sensitivity : 0.8962          
+##             Specificity : 0.6784          
+##          Pos Pred Value : 0.8173          
+##          Neg Pred Value : 0.8028          
+##              Prevalence : 0.6162          
+##          Detection Rate : 0.5522          
+##    Detection Prevalence : 0.6756          
+##       Balanced Accuracy : 0.7873          
+##                                           
+##        'Positive' Class : 0               
 ## 
 ```
 
@@ -2426,7 +2426,7 @@ acc(svm.radial.pred, training$Survived, training) - max(svm.radial$results$Accur
 ```
 
 ```
-## [1] -7.118627e-05
+## [1] 0.001088475
 ```
 
 ```r
@@ -2465,8 +2465,8 @@ summary(ensembled.test)
 
 ```
 ##  PassengerId        rf      boost   svm     mean   
-##  Length:418         0:261   0:258   0:271   0:260  
-##  Class :character   1:157   1:160   1:147   1:158  
+##  Length:418         0:258   0:258   0:271   0:258  
+##  Class :character   1:160   1:160   1:147   1:160  
 ##  Mode  :character
 ```
 
@@ -2481,17 +2481,17 @@ final.pred
 ```
 
 ```
-##   [1] 0 0 0 0 1 0 1 0 1 0 0 0 1 0 1 1 0 0 1 1 0 1 1 0 1 0 1 0 0 0 0 0 1 1 1
-##  [36] 0 1 0 0 0 0 1 0 1 1 0 0 0 1 1 1 0 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 0 0 1
-##  [71] 1 0 1 1 1 0 0 1 0 1 1 0 0 0 0 0 1 0 1 1 1 0 1 0 0 0 1 0 1 0 1 0 0 0 1
-## [106] 0 0 0 0 0 0 1 1 1 1 0 0 1 0 1 1 0 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0
-## [141] 0 1 0 0 0 0 0 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 1 0 0 1 0 0 1 0 0 0 0 0 0
+##   [1] 0 1 0 0 1 0 1 0 1 0 0 0 1 0 1 1 0 0 1 1 0 0 1 0 1 0 1 0 0 0 0 0 1 1 0
+##  [36] 0 1 1 0 0 0 0 0 1 1 0 0 0 1 1 0 0 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 0 0 1
+##  [71] 1 0 1 0 1 0 0 1 0 1 1 0 0 0 0 0 1 1 1 1 1 0 1 0 0 0 1 0 1 0 1 0 0 0 1
+## [106] 0 0 0 0 0 0 1 1 1 1 0 0 1 0 1 1 0 1 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0 1 0
+## [141] 0 1 0 0 0 0 0 0 0 0 1 0 0 1 0 0 1 1 0 1 1 1 1 0 0 1 0 0 1 1 0 0 0 0 0
 ## [176] 1 1 0 1 1 0 0 1 0 1 0 1 0 0 0 0 0 1 0 1 0 1 1 0 1 1 1 0 1 0 0 1 0 1 0
 ## [211] 0 0 0 1 0 0 1 0 1 0 1 0 1 0 1 1 0 1 0 0 0 1 0 0 0 0 0 0 1 1 1 1 0 0 1
-## [246] 0 1 0 1 0 1 0 0 0 0 0 0 0 1 0 0 0 1 1 0 0 0 0 1 0 0 0 1 1 0 1 0 0 0 0
-## [281] 0 1 1 1 1 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 1 0 1 0 0 0 0 0 0 1
-## [316] 1 0 0 0 0 0 0 0 0 1 0 1 0 0 0 1 0 0 1 0 1 0 0 0 1 0 0 0 1 1 1 0 1 0 1
-## [351] 1 0 0 0 1 0 1 0 0 1 0 1 1 0 1 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 1 1 0
+## [246] 0 1 0 1 1 1 0 0 0 0 0 0 0 1 0 0 0 1 1 0 0 0 0 1 0 0 0 1 1 0 1 0 0 0 0
+## [281] 1 1 1 1 1 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 1 1 0 1 0 1 0 0 0 1 1
+## [316] 1 0 0 0 0 0 0 0 0 1 0 1 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 1 0 1
+## [351] 1 0 0 0 1 0 1 0 0 1 0 1 1 0 1 0 0 1 1 0 0 1 0 0 1 1 0 0 0 0 0 0 1 1 0
 ## [386] 1 0 0 0 0 0 1 1 0 0 1 0 1 0 0 1 0 1 0 0 0 0 0 1 1 1 1 1 0 1 0 0 1
 ## Levels: 0 1
 ```
@@ -2505,7 +2505,7 @@ head(final)
 ```
 ##   PassengerId Survived
 ## 1         892        0
-## 2         893        0
+## 2         893        1
 ## 3         894        0
 ## 4         895        0
 ## 5         896        1
